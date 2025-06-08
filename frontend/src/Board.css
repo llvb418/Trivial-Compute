@@ -6,11 +6,6 @@
     padding: 20px;
   }
   
-  .name-bar {
-    margin: 10px;
-    font-weight: bold;
-  }
-  
   .board {
     display: grid;
     grid-template-rows: repeat(7, 1fr);
@@ -34,38 +29,42 @@
     color: white;
     font-size: 12px;
     text-align: center;
+    background-color: lightgray;
+    border: 1px solid #ccc;
   }
   
+  /* Colors */
   .cell.red {
     background-color: #e53935;
   }
-  
   .cell.blue {
     background-color: #1e88e5;
   }
-  
   .cell.green {
     background-color: #43a047;
   }
-  
   .cell.yellow {
     background-color: #fdd835;
     color: black;
   }
-  
-  .cell.hq, .cell.rq {
+  .cell.hq,
+  .cell.rq {
     background-color: black;
     color: white;
   }
-  
   .cell.roll-again {
     background-color: #ff9800;
     color: black;
   }
-  
   .cell.trivial-compute {
     background-color: white;
     color: black;
     border: 2px solid black;
+  }
+  
+  button {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    font-size: 16px;
   }
   

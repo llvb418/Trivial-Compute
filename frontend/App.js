@@ -1,29 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-function App() {
-  const [questions, setQuestions] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState("");
-  const [score, setScore] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [feedback, setFeedback] = useState("");
-
-  useEffect(() => {
-    // ✅ Properly fetch from Django backend
-    fetch("http://localhost:8000/api/random_question/")
-      .then((res) => res.json())
-      .then((data) => {
-        // Ensure the API returns an array of questions
-        setQuestions(data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch questions:", err);
-      });
-  }, []);
-
-  const handleSubmit = () => {
-    setSubmitted(true);
-    const correct = questions[currentIndex].correctAnswer;
     if (selectedAnswer === correct) {
       setFeedback("✅ Correct!");
       setScore(score + 1);

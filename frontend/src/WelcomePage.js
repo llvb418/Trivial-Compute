@@ -33,7 +33,7 @@ function WelcomePage() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Players saved:", data);
-        navigate("/GamePage"); // ✅ Make sure this route exists in App.js
+        navigate("/game"); // ✅ Make sure this route exists in App.js
       })
       .catch((err) => console.error("Error saving players:", err));
   };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function QuizPage() {
+function GamePage() {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");

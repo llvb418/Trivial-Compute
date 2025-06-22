@@ -13,6 +13,8 @@ function WelcomePage() {
 
   const handleAddPlayer = () => {
     setPlayers([...players, { name: "" }]);
+    if (players.length >= 4) return;
+
   };
 
   const handleSubmit = () => {
@@ -47,10 +49,11 @@ function WelcomePage() {
         ))}
         <button
           onClick={handleAddPlayer}
-          className="w-full bg-pink-500 text-white py-2 rounded hover:bg-pink-600"
-        >
-          ➕ Add New Player
+          disabled={players.length >= 4}
+          >
+            ➕ Add New Player
         </button>
+
         <button
           onClick={handleSubmit}
           className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"

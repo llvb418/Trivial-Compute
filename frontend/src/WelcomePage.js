@@ -12,30 +12,37 @@ function WelcomePage() {
   };
 
   const handleAddPlayer = () => {
+    if (players.length >= 4) return; // ✅ Prevent more than 4 players
     setPlayers([...players, { name: "" }]);
-    if (players.length >= 4) return;
-
   };
 
   const handleSubmit = () => {
+    const validPlayers = players.filter((p) => p.name.trim() !== "");
+    if (validPlayers.length === 0) {
+      alert("Please enter at least one player name.");
+      return;
+    }
+
     fetch("http://localhost:8000/api/players/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ players }),
+      body: JSON.stringify({ players: validPlayers }),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log("Players saved:", data);
-        navigate("/quiz"); // go to next page
+        navigate("/quiz"); // ✅ Make sure this route exists in App.js
       })
       .catch((err) => console.error("Error saving players:", err));
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 p-6">
-      <h1 className="text-4xl font-bold text-pink-600 mb-6">🎉 Welcome to Trivial Pursuit 🎲</h1>
+      <h1 className="text-4xl font-bold text-pink-600 mb-6">
+        🎉 Welcome to Trivial Pursuit 🎲
+      </h1>
       <div className="space-y-4 w-full max-w-md">
         {players.map((player, index) => (
           <input
@@ -47,11 +54,13 @@ function WelcomePage() {
             className="w-full px-4 py-2 border border-gray-300 rounded shadow"
           />
         ))}
+
         <button
           onClick={handleAddPlayer}
           disabled={players.length >= 4}
-          >
-            ➕ Add New Player
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+        >
+          ➕ Add New Player
         </button>
 
         <button
@@ -66,3 +75,4 @@ function WelcomePage() {
 }
 
 export default WelcomePage;
+

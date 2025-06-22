@@ -1,29 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-// Simulated backend data (replace with fetch call later)
-//replace with following code for django backend
-//fetch("http://localhost:8000/api/questions/")
-//.then(res => res.json())
-//.then(data => setQuestions(data));
-
-const mockQuestions = [
-  {
-    question: "What is the capital of France?",
-    choices: ["Berlin", "Madrid", "Paris", "Rome"],
-    correctAnswer: "Paris",
-  },
-  {
-    question: "Which planet is known as the Red Planet?",
-    choices: ["Earth", "Mars", "Venus", "Jupiter"],
-    correctAnswer: "Mars",
-  },
-  {
-    question: "Who wrote 'To Kill a Mockingbird'?",
-    choices: ["Harper Lee", "Ernest Hemingway", "F. Scott Fitzgerald", "Mark Twain"],
-    correctAnswer: "Harper Lee",
-  },
-];
-
 function App() {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,8 +9,16 @@ function App() {
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
-    // Simulate fetching from backend
-    setQuestions(mockQuestions);
+    // ✅ Properly fetch from Django backend
+    fetch("http://localhost:8000/api/random_question/")
+      .then((res) => res.json())
+      .then((data) => {
+        // Ensure the API returns an array of questions
+        setQuestions(data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch questions:", err);
+      });
   }, []);
 
   const handleSubmit = () => {
@@ -116,3 +100,4 @@ function App() {
 }
 
 export default App;
+

@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-function GamePage() {
+// Simulated backend data (replace with fetch call later)
+//replace with following code for django backend
+//fetch("http://localhost:8000/api/questions/")
+//.then(res => res.json())
+//.then(data => setQuestions(data));
+
+fetch("http://localhost:8000/api/random_question/")
+  .then(res => res.json())
+  .then(data => setQuestions(data));
+
+
+function App() {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -9,10 +20,8 @@ function GamePage() {
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/random_question/")
-      .then((res) => res.json())
-      .then((data) => setQuestions(data))
-      .catch((err) => console.error("Failed to fetch questions:", err));
+    // Simulate fetching from backend
+    setQuestions(mockQuestions);
   }, []);
 
   const handleSubmit = () => {
@@ -93,4 +102,4 @@ function GamePage() {
   );
 }
 
-export default GamePage;
+export default App;

@@ -1,15 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WelcomePage from "./WelcomePage";
 import GamePage from "./GamePage";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/game" element={<GamePage />} />
+        <Route path="*" element={<div>404 — Page Not Found</div>} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

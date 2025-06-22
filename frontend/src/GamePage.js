@@ -9,9 +9,9 @@ function GamePage() {
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/random_question/")
+    fetch("http://localhost:8000/api/random-question/")
       .then((res) => res.json())
-      .then((data) => setQuestions(data))
+      .then((data) => setQuestions([data]))
       .catch((err) => console.error("Failed to fetch questions:", err));
   }, []);
 

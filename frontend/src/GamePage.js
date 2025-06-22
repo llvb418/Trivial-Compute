@@ -34,6 +34,7 @@ function GamePage() {
   };
 
   if (questions.length === 0) return <div className="p-4">Loading questions...</div>;
+
   if (currentIndex >= questions.length) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">

@@ -3,7 +3,14 @@ import WelcomePage from "./WelcomePage";
 import GamePage from "./GamePage";
 
 function App() {
-  return (
+  return <WelcomePage />;
+}
+
+export default App;
+
+/*
+return this to connect multiple pages
+(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
@@ -11,7 +18,5 @@ function App() {
         <Route path="*" element={<div>404 — Page Not Found</div>} />
       </Routes>
     </BrowserRouter>
-  );
-}
-
-export default App;
+  )
+*/

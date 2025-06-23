@@ -12,7 +12,7 @@ function WelcomePage() {
   };
 
   const handleAddPlayer = () => {
-    if (players.length >= 4) return; // ✅ Prevent more than 4 players
+    if (players.length >= 4) return;
     setPlayers([...players, { name: "" }]);
   };
 
@@ -33,16 +33,26 @@ function WelcomePage() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Players saved:", data);
-        navigate("/game"); // ✅ Make sure this route exists in App.js
+        navigate("/game");
       })
       .catch((err) => console.error("Error saving players:", err));
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 p-6 text-center">
+      {/* Animated Logo */}
+      <img
+        src="/Trivial_Compute.png"
+        alt="Trivial Compute Logo"
+        className="w-40 h-40 mb-6 animate-bounce"
+      />
+
+      {/* Title */}
       <h1 className="text-4xl font-bold text-pink-600 mb-6">
-        🎉 Welcome to Trivial Pursuit 🎲
+        🎉 Welcome to Trivial Compute 🎲
       </h1>
+
+      {/* Player Inputs */}
       <div className="space-y-4 w-full max-w-md">
         {players.map((player, index) => (
           <input
@@ -75,4 +85,5 @@ function WelcomePage() {
 }
 
 export default WelcomePage;
+
 

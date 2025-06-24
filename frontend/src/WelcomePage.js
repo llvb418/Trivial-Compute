@@ -39,26 +39,26 @@ function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-yellow-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-xl max-h-screen overflow-y-auto flex flex-col items-center text-center p-4">
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="bg-white border border-pink-300 rounded-2xl shadow-lg p-6 sm:p-8 max-w-md w-full text-center">
         {/* Logo */}
         <img
           src="/Trivial_Compute.png"
           alt="Trivial Compute Logo"
-          className="w-24 md:w-32 lg:w-40 h-auto mb-4 animate-bounceSlow object-contain mx-auto" />
+          className="mx-auto w-24 h-auto mb-4"
+        />
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl font-bold text-pink-600 mb-4">
+        <h1 className="text-3xl font-bold text-pink-600 mb-2">
           🎉 Welcome to Trivial Compute 🎲
         </h1>
 
-        <div className="bg-white border border-pink-300 text-pink-600 text-base italic px-4 py-3 rounded-xl shadow mb-4 max-w-md">
-          💬 Add up to 4 players and hit <strong>Start Game</strong> when done!
-        </div>
-
+        <p className="text-pink-500 italic mb-4">
+          💬 Add up to 4 players and hit <strong>Start Game</strong>!
+        </p>
 
         {/* Player Inputs */}
-        <div className="space-y-4 w-full max-w-md">
+        <div className="space-y-3">
           {players.map((player, index) => (
             <input
               key={index}
@@ -66,7 +66,7 @@ function WelcomePage() {
               placeholder={`Player ${index + 1} name`}
               value={player.name}
               onChange={(e) => handleChange(index, e)}
-              className="w-full px-4 py-2 border border-gray-300 rounded shadow"
+              className="w-full px-4 py-2 border border-gray-300 rounded"
             />
           ))}
 
@@ -91,5 +91,3 @@ function WelcomePage() {
 }
 
 export default WelcomePage;
-
-

@@ -37,12 +37,55 @@ class AnswerOption(models.Model):
     def __str__(self):
         return self.text
     
-class Player(models.Model):
-    name = models.CharField(max_length=100)
-    chips = models.ManyToManyField(Category, blank=True)
-
 class GameSession(models.Model):
-    players = models.ManyToManyField(Player)
-    current_turn = models.IntegerField(default=0)  # index of player in turn order
     created_at = models.DateTimeField(auto_now_add=True)
+    current_turn = models.IntegerField(default=0)  # 0-3 for turn order
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Session {self.id} (Turn {self.current_turn})"
+    
+class Player(models.Model):
+    COLORS = [
+        ('red', 'Red'),
+        ('blue', 'Blue'),
+        ('green', 'Green'),
+        ('yellow', 'Yellow'),
+    ]
+
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=10, choices=COLORS, default='red')
+    session = models.ForeignKey(GameSession, related_name='players', on_delete=models.CASCADE, default=1)
+
+    position = models.PositiveIntegerField(null=True, blank=True)  
+
+
+    # Each chip represents a category earned
+    has_red_chip = models.BooleanField(default=False)
+    has_blue_chip = models.BooleanField(default=False)
+    has_green_chip = models.BooleanField(default=False)
+    has_yellow_chip = models.BooleanField(default=False)
+
+    def chips_collected(self):
+        return {
+            "red": self.has_red_chip,
+            "blue": self.has_blue_chip,
+            "green": self.has_green_chip,
+            "yellow": self.has_yellow_chip,
+        }
+    
+    def award_chip(self, category_color):
+        if category_color == 'red':
+            self.has_red_chip = True
+        elif category_color == 'blue':
+            self.has_blue_chip = True
+        elif category_color == 'green':
+            self.has_green_chip = True
+        elif category_color == 'yellow':
+            self.has_yellow_chip = True
+        self.save()
+
+    def __str__(self):
+        return f"{self.name} ({self.color}, pos {self.position})"
+
 

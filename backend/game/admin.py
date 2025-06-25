@@ -10,3 +10,6 @@ class QuestionAdmin(admin.ModelAdmin):
 
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Category)
+admin.site.site_header = "Question Editor"
+admin.site.site_title = "Admin Portal"
+admin.site.index_title = "Welccome, educators!"

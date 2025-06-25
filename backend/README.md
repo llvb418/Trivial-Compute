@@ -35,7 +35,7 @@ If not already installed:
 pip install -r requirements.txt
 ```
 
-## 3. Run Migrations
+### 3. Run Migrations
 
 Make sure the database schema is up to date:
 
@@ -43,7 +43,9 @@ Make sure the database schema is up to date:
 python manage.py migrate
 ```
 
-## 4. Start Server
+### 4. Create database if you have not already done so
+
+### 5. Start Server
 
 ```bash
 python manage.py runserver
@@ -54,17 +56,31 @@ http://localhost:8000/
 Test the existing questions at:
 http://localhost:8000/api/random-question/ 
 
+In order for the random question page to work, you need to have set up the database and added questions. To add questions to the database if you have not already, see [Admin Panel](#admin-panel)
+
 ## Admin Panel
 
 To add questions and categories through the admin interface:
 
-Go to:
-http://localhost:8000/admin/
+### Add a superuser for your database instance:
 
-Log in with superuser credentials:
+```bash
+python manage.py createsuperuser
+```
 
+I just used 
 - user = admin
 - password = admin
+
+### Re-run the server:
+
+```bash
+python manage.py runserver
+```
+
+### Go to: http://localhost:8000/admin/
+
+### Log in with the superuser credentials you just created
 
 From here you can:
 

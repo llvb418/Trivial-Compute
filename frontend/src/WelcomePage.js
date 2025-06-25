@@ -42,10 +42,10 @@ function WelcomePage() {
 
         {/* Logo */}
         <img
-  src="/Trivial_Compute.png"
-  alt="Trivial Compute Logo"
-  className="mx-auto mb-4"
-  style={{ width: "1235px", height: "auto", maxWidth: "100%" }}
+          src="/Trivial_Compute.png"
+          alt="Trivial Compute Logo"
+          className="mx-auto mb-4"
+          style={{ width: "1200px", height: "auto", maxWidth: "100%" }}
 />
 
 

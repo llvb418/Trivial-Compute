@@ -56,9 +56,7 @@ class Player(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=10, choices=COLORS, default='red')
     session = models.ForeignKey(GameSession, related_name='players', on_delete=models.CASCADE, default=1)
-
     position = models.PositiveIntegerField(null=True, blank=True)  
-
 
     # Each chip represents a category earned
     has_red_chip = models.BooleanField(default=False)

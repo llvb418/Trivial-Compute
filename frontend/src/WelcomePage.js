@@ -16,56 +16,76 @@ function WelcomePage() {
     setPlayers([...players, { name: "" }]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validPlayers = players.filter((p) => p.name.trim() !== "");
     if (validPlayers.length === 0) {
       alert("Please enter at least one player name.");
       return;
     }
 
-    // Send to backend
-    fetch("http://localhost:8000/api/players/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ players: validPlayers }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to save players.");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Players saved:", data);
-        navigate("/game"); // Navigate after successful POST
-      })
-      .catch((err) => {
-        console.error("Error saving players:", err);
-        alert("There was an issue saving the player names.");
+    try {
+      // Step 1: Start session
+      const sessionRes = await fetch("http://127.0.0.1:8000/api/start-session/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
+
+      if (!sessionRes.ok) {
+        const errorText = await sessionRes.text();
+        throw new Error(`Start session failed: ${errorText}`);
+      }
+
+      const sessionData = await sessionRes.json();
+      const session_id = sessionData.session_id;
+      console.log("✅ Session started:", session_id);
+
+      // Step 2: Join session for each player
+      const playerResponses = await Promise.all(
+        validPlayers.map(async (player) => {
+          const res = await fetch(`http://127.0.0.1:8000/api/join-session/${session_id}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: player.name }),
+          });
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Failed to add ${player.name}: ${errorText}`);
+          }
+
+          return res.json();
+        })
+      );
+
+      console.log("✅ All players joined:", playerResponses);
+
+      // Step 3: Navigate to game
+      navigate("/game", { state: { session_id } });
+
+    } catch (error) {
+      console.error("❌ Full error:", error);
+      alert(`There was an issue saving the player names: ${error.message}`);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-yellow-100 to-blue-100 px-4 py-8">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md text-center overflow-auto max-h-[90vh]">
-
-        {/* Logo */}
         <img
           src="/Trivial_Compute.png"
           alt="Trivial Compute Logo"
           className="mx-auto mb-4"
-          style={{ width: "100%", maxWidth: "400px", height: "auto" }}
+          style={{ width: "1200px", height: "auto", maxWidth: "100%" }}
         />
 
-        {/* Title */}
         <h1 className="text-2xl font-bold text-pink-600 mb-2">
           🎉 Welcome to Trivial Compute 🎲
         </h1>
 
-        {/* Instructions */}
         <p className="text-sm text-gray-600 italic mb-4">
           💬 Add up to 4 players and hit <strong>Start Game</strong>!
         </p>
 
-        {/* Inputs */}
         <div className="space-y-3">
           {players.map((player, index) => (
             <input
@@ -99,3 +119,4 @@ function WelcomePage() {
 }
 
 export default WelcomePage;
+

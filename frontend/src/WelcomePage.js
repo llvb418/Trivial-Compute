@@ -23,17 +23,24 @@ function WelcomePage() {
       return;
     }
 
+    // Send to backend
     fetch("http://localhost:8000/api/players/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ players: validPlayers }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to save players.");
+        return res.json();
+      })
       .then((data) => {
         console.log("Players saved:", data);
-        navigate("/game");
+        navigate("/game"); // Navigate after successful POST
       })
-      .catch((err) => console.error("Error saving players:", err));
+      .catch((err) => {
+        console.error("Error saving players:", err);
+        alert("There was an issue saving the player names.");
+      });
   };
 
   return (
@@ -45,10 +52,8 @@ function WelcomePage() {
           src="/Trivial_Compute.png"
           alt="Trivial Compute Logo"
           className="mx-auto mb-4"
-          style={{ width: "1200px", height: "auto", maxWidth: "100%" }}
-/>
-
-
+          style={{ width: "100%", maxWidth: "400px", height: "auto" }}
+        />
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-pink-600 mb-2">

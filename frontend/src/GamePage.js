@@ -1,109 +1,106 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const GamePage = ({ sessionId }) => {
-  const [players, setPlayers] = useState([]);
-  const [currentTurn, setCurrentTurn] = useState(0);
+function GamePage() {
+  const { sessionId } = useParams();
+  const [gameState, setGameState] = useState(null);
+  const [question, setQuestion] = useState(null);
+  const [diceRoll, setDiceRoll] = useState(null);
+  const [playerInfo, setPlayerInfo] = useState(null);
 
-  // Fetch the session state from the backend
   const fetchGameState = async () => {
-    try {
-      console.log("Fetching session state for session:", sessionId);
-      const response = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
-      if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
-      const data = await response.json();
-
-      setPlayers(data.players);
-      setCurrentTurn(data.current_turn);
-    } catch (error) {
-      console.error("Failed to fetch game state:", error);
-    }
-  };
-
-  // Run once on load
-  useEffect(() => {
-    fetchGameState();
-  }, []);
-
-  // Button actions
-  const handleRollDice = async () => {
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/roll-dice/");
-      const data = await res.json();
-      alert(`🎲 You rolled a ${data.roll_result}`);
-    } catch (error) {
-      console.error("Error rolling dice:", error);
-    }
-  };
-
-  const handleGetQuestion = async () => {
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/get-question/");
-      const data = await res.json();
-      alert(`📚 Category: ${data.category}\n${data.question_text}`);
-    } catch (error) {
-      console.error("Error fetching question:", error);
-    }
-  };
-
-  const handleGetPlayerInfo = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
       const data = await res.json();
-      const info = data.players
-        .map(p =>
-          `${p.name} — ${p.color}\n🧩 Chips: ${JSON.stringify(p.chips)}\n📍 Position: ${p.position ?? "N/A"}`
-        )
-        .join("\n\n");
-      alert(info);
-    } catch (error) {
-      console.error("Error getting player info:", error);
+      setGameState(data);
+      console.log("✅ Game state:", data);
+    } catch (err) {
+      console.error("❌ Failed to fetch game state:", err);
     }
   };
 
+  const fetchQuestion = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/get-question/`);
+      const data = await res.json();
+      setQuestion(data);
+      console.log("✅ Question:", data);
+    } catch (err) {
+      console.error("❌ Failed to get question:", err);
+    }
+  };
+
+  const fetchDiceRoll = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/`);
+      const data = await res.json();
+      setDiceRoll(data.roll_result);
+      console.log("🎲 Rolled:", data.roll_result);
+    } catch (err) {
+      console.error("❌ Error rolling dice:", err);
+    }
+  };
+
+  const fetchPlayerInfo = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
+      const data = await res.json();
+      setPlayerInfo(data.players);
+      console.log("✅ Players:", data.players);
+    } catch (err) {
+      console.error("❌ Error getting player info:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (sessionId) {
+      console.log("Fetching session state for session:", sessionId);
+      fetchGameState();
+    }
+  }, [sessionId]);
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">🎮 Game Session #{sessionId}</h1>
+    <div className="min-h-screen bg-white p-6">
+      <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
 
-      <h2 className="text-lg font-semibold">Players:</h2>
-      <ul className="mb-4">
-        {players.map((player, index) => (
-          <li key={index}>
-            {player.name} — {player.color}
-          </li>
-        ))}
-      </ul>
-
-      <p className="text-red-600 mb-6">🎯 It's player #{currentTurn}'s turn!</p>
-
-      <div className="p-4 bg-white shadow rounded w-fit space-y-3">
-        <button
-          onClick={handleRollDice}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          🎲 Roll Dice
-        </button>
-        <button
-          onClick={handleGetQuestion}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          ❓ Get Question
-        </button>
-        <button
-          onClick={handleGetPlayerInfo}
-          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-        >
-          👥 Player Info
-        </button>
-        <button
-          onClick={fetchGameState}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-        >
-          🤔 Get Positions
-        </button>
+      <div className="space-x-2 mb-6">
+        <button onClick={fetchGameState} className="bg-blue-500 text-white px-4 py-2 rounded">🔄 Refresh Game State</button>
+        <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">❓ Get Question</button>
+        <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">🎲 Roll Dice</button>
+        <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">👥 Get Player Info</button>
       </div>
+
+      {diceRoll !== null && <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll}</strong></p>}
+
+      {question && (
+        <div className="mt-4 p-4 border border-gray-300 rounded">
+          <h2 className="text-xl font-semibold">📘 Question</h2>
+          <p><strong>{question.question_text}</strong></p>
+          {question.options && (
+            <ul className="list-disc ml-6 mt-2">
+              {question.options.map((opt, idx) => (
+                <li key={idx}>{opt.text}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {playerInfo && (
+        <div className="mt-6">
+          <h2 className="text-xl font-bold mb-2">👤 Players</h2>
+          {playerInfo.map((p, idx) => (
+            <div key={idx} className="border-b py-2">
+              <p><strong>{p.name}</strong> — Color: {p.color}, Position: {p.position}</p>
+              <p>Chips: {Object.entries(p.chips).filter(([_, val]) => val).map(([k]) => k).join(", ") || "None"}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default GamePage;
+
 

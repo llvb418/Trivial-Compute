@@ -7,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
-        <Route path="/game" element={<GamePage />} />
+        <Route path="/game/:sessionId" element={<GamePage />} />
         <Route path="*" element={<div>404 — Page Not Found</div>} />
       </Routes>
     </BrowserRouter>

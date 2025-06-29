@@ -60,7 +60,7 @@ function WelcomePage() {
       console.log("✅ All players joined:", playerResponses);
 
       // Step 3: Navigate to game
-      navigate("/game", { state: { session_id } });
+      navigate("/game/${sessionId}");
 
     } catch (error) {
       console.error("❌ Full error:", error);

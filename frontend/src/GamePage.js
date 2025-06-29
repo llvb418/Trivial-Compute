@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 function GamePage() {
@@ -52,25 +52,35 @@ function GamePage() {
     }
   };
 
-  useEffect(() => {
-    if (sessionId) {
-      console.log("Fetching session state for session:", sessionId);
-      fetchGameState();
-    }
-  }, [sessionId]);
-
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
 
       <div className="space-x-2 mb-6">
-        <button onClick={fetchGameState} className="bg-blue-500 text-white px-4 py-2 rounded">🔄 Refresh Game State</button>
-        <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">❓ Get Question</button>
-        <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">🎲 Roll Dice</button>
-        <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">👥 Get Player Info</button>
+        <button onClick={fetchGameState} className="bg-blue-500 text-white px-4 py-2 rounded">
+          🔄 Get Game State
+        </button>
+        <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">
+          ❓ Get Question
+        </button>
+        <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
+          🎲 Roll Dice
+        </button>
+        <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">
+          👥 Get Player Info
+        </button>
       </div>
 
-      {diceRoll !== null && <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll}</strong></p>}
+      {gameState && (
+        <div className="mb-4">
+          <p className="text-lg">🆔 Session ID: <strong>{sessionId}</strong></p>
+          {/* You can show more game state info here if needed */}
+        </div>
+      )}
+
+      {diceRoll !== null && (
+        <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll}</strong></p>
+      )}
 
       {question && (
         <div className="mt-4 p-4 border border-gray-300 rounded">
@@ -102,5 +112,6 @@ function GamePage() {
 }
 
 export default GamePage;
+
 
 

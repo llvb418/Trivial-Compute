@@ -8,6 +8,7 @@ function GamePage() {
   const [diceRoll, setDiceRoll] = useState(null);
   const [playerInfo, setPlayerInfo] = useState(null);
 
+  //get the game session id from the backend
   const fetchGameState = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
@@ -18,7 +19,7 @@ function GamePage() {
       console.error("❌ Failed to fetch game state:", err);
     }
   };
-
+  //get a random question from the backend
   const fetchQuestion = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-question/`);
@@ -30,6 +31,7 @@ function GamePage() {
     }
   };
 
+  //get the simulated dice roll number from the backend
   const fetchDiceRoll = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/`);
@@ -41,6 +43,7 @@ function GamePage() {
     }
   };
 
+  //get player info for corresponding game session from backend
   const fetchPlayerInfo = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
@@ -70,7 +73,7 @@ function GamePage() {
           👥 Get Player Info
         </button>
       </div>
-
+    
       {gameState && (
         <div className="mb-4">
           <p className="text-lg">🆔 Session ID: <strong>{sessionId}</strong></p>

@@ -12,7 +12,7 @@
 }
 ```
 
-## GET /api/get-random-question/
+## GET /api/get-question/
 **Description:** Fetch a random question from the database.
 
 **Request Body:** _none_
@@ -63,7 +63,7 @@
 }
 ```
 
-## GET /api/get-session-state/<session_id>/
+## GET /api/session-state/<session_id>/
 **Description:** Gets the current game state for a session.
 
 **Request Body:** _none_

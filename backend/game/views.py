@@ -5,6 +5,7 @@ from .models import *
 from .serializers import QuestionSerializer
 from django.http import HttpResponse
 import random
+from rest_framework.decorators import api_view
 
 def home(request):
     return HttpResponse("Welcome to the Trivial Compute backend.")
@@ -27,10 +28,12 @@ def get_random_question(request):
 
     return Response(data)
 
+@api_view(['GET'])
 def roll_dice(request):
     rolled_val = random.randint(1, 6)
     context = {'roll_result': rolled_val}
     return Response(context)
+
 
 @api_view(['POST'])
 def start_session(request):

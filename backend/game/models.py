@@ -56,7 +56,7 @@ class Player(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=10, choices=COLORS, default='red')
     session = models.ForeignKey(GameSession, related_name='players', on_delete=models.CASCADE, default=1)
-    position = models.PositiveIntegerField(null=True, blank=True)  
+    position = models.PositiveIntegerField(default=0)  
 
     # Each chip represents a category earned
     has_red_chip = models.BooleanField(default=False)
@@ -86,4 +86,17 @@ class Player(models.Model):
     def __str__(self):
         return f"{self.name} ({self.color}, pos {self.position})"
 
+class Tile(models.Model):
+    TILE_TYPES = [
+        ('NORMAL', 'Normal'),
+        ('HQ', 'Headquarters'),
+        ('ROLL_AGAIN', 'Roll Again'),
+        ('START', 'Start'),
+    ]
 
+    index = models.IntegerField(unique=True)
+    tile_type = models.CharField(max_length=10, choices=TILE_TYPES, default='NORMAL')
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+   
+    def __str__(self):
+        return f"Tile {self.index} ({self.tile_type}, {self.category})"

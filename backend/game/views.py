@@ -12,21 +12,38 @@ def home(request):
 
 @api_view(['GET'])
 def get_random_question(request):
-    question = Question.objects.order_by('?').first()
+    category_name = request.query_params.get('category', None)  # get category from URL query params, or None
+
+    if category_name:
+        # Try to get the category object
+        try:
+            category = Category.objects.get(name__iexact=category_name)
+            questions = Question.objects.filter(category=category)
+        except Category.DoesNotExist:
+            return Response({"error": "Category not found"}, status=404)
+    else:
+        # No category filter — use all questions
+        questions = Question.objects.all()
+
+    if not questions.exists():
+        return Response({"error": "No questions available"}, status=404)
+
+    question = questions.order_by('?').first()
     data = {
         "id": question.id,
         "question_text": question.question_text,
         "question_type": question.question_type,
         "category": question.category.name,
+        "answer": question.answer_text,
     }
 
-    if question.question_type == "MC" or question.question_type == "TF":
-        options = question.options.all().values('text')  # don’t include is_correct
+    if question.question_type == "MC":
+        options = question.options.all().values('text')  
         data["options"] = list(options)
-    elif question.question_type == "TXT":
-        data["answer_type"] = "text"
 
     return Response(data)
+
+
 
 @api_view(['GET'])
 def roll_dice(request):
@@ -55,7 +72,7 @@ def join_session(request, session_id):
     if not available_colors:
         return Response({"error": "No available colors"}, status=400)
 
-    player = Player.objects.create(name=name, color=available_colors[0], session=session)
+    player = Player.objects.create(name=name, color=available_colors[0], session=session, position=21)
     return Response({"name": player.name, "color": player.color})
 
 @api_view(['GET'])

@@ -13,7 +13,7 @@
 ```
 
 ## GET /api/get-question/
-**Description:** Fetch a random question from the database.
+**Description:** Fetch a random question from the database. If the optional query parameter category is provided, fetch a random question from that category. ex. "http://localhost:8000/api/get-question/?category=Countries"
 
 **Request Body:** _none_
 

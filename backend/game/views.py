@@ -2,10 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import *
-from .serializers import QuestionSerializer
+from .serializers import *
 from django.http import HttpResponse
 import random
 from rest_framework.decorators import api_view
+from .game_logic import find_tiles_at_distance
 
 def home(request):
     return HttpResponse("Welcome to the Trivial Compute backend.")
@@ -43,14 +44,23 @@ def get_random_question(request):
 
     return Response(data)
 
+@api_view(['POST'])
+def roll_dice(request, player_id):
+    player = Player.objects.get(id=player_id)
+    roll = random.randint(1, 6)
+    start_tile = player.position  # assuming it's an integer ID
 
+    possible_tile_ids = find_tiles_at_distance(start_tile, roll)
+    possible_tiles = Tile.objects.filter(id__in=possible_tile_ids)
 
-@api_view(['GET'])
-def roll_dice(request):
-    rolled_val = random.randint(1, 6)
-    context = {'roll_result': rolled_val}
-    return Response(context)
-
+    return Response({
+        "roll": roll,
+        "possible_tiles": possible_tile_ids,
+        # "possible_tiles": [
+        #     {"id": t.id, "position": t.position, "type": t.tile_type}
+        #     for t in possible_tiles
+        # ]
+    })
 
 @api_view(['POST'])
 def start_session(request):
@@ -72,8 +82,9 @@ def join_session(request, session_id):
     if not available_colors:
         return Response({"error": "No available colors"}, status=400)
 
-    player = Player.objects.create(name=name, color=available_colors[0], session=session, position=21)
-    return Response({"name": player.name, "color": player.color})
+    player = Player.objects.create(name=name, color=available_colors[0], session=session, position=22)
+    serializer = PlayerSerializer(player)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def get_session_state(request, session_id):

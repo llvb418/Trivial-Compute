@@ -13,4 +13,4 @@ admin.site.register(Category)
 admin.site.register(GameSession)
 admin.site.site_header = "Question Editor"
 admin.site.site_title = "Admin Portal"
-admin.site.index_title = "Welccome, educators!"
+admin.site.index_title = "Welcome, educators!"

@@ -33,15 +33,17 @@
 }
 ```
 
-## POST /api/roll-dice/
-**Description:** Simulates rolling a 6-sided dice.
+## POST /api/roll-dice/<player_id>
+**Description:** Simulates rolling a 6-sided dice. Calculates the possible moves based on the player's current location.
+
 
 **Request Body:** _none_
 
 **Response:**
 ```json
 {
-  "roll_result": 4
+  "roll_result": 4,
+  "possible_tiles": [6,13,20,30],
 }
 ```
 

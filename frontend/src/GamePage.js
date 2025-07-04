@@ -34,7 +34,7 @@ function GamePage() {
   //get the simulated dice roll number from the backend
   const fetchDiceRoll = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/`);
+      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/`); //add player id
       const data = await res.json();
       setDiceRoll(data.roll_result);
       console.log("🎲 Rolled:", data.roll_result);

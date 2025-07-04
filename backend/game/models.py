@@ -57,6 +57,10 @@ class Player(models.Model):
     color = models.CharField(max_length=10, choices=COLORS, default='red')
     session = models.ForeignKey(GameSession, related_name='players', on_delete=models.CASCADE, default=1)
     position = models.PositiveIntegerField(default=0)  
+    session_player_id = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('session', 'session_player_id')  # Ensure uniqueness within session
 
     # Each chip represents a category earned
     has_red_chip = models.BooleanField(default=False)

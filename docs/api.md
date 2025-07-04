@@ -33,7 +33,7 @@
 }
 ```
 
-## POST /api/roll-dice/<player_id>
+## POST /api/roll-dice/<session_id>/<player_id>/
 **Description:** Simulates rolling a 6-sided dice. Calculates the possible moves based on the player's current location.
 
 

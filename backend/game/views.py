@@ -45,8 +45,8 @@ def get_random_question(request):
     return Response(data)
 
 @api_view(['POST'])
-def roll_dice(request, player_id):
-    player = Player.objects.get(id=player_id)
+def roll_dice(request, session_id, player_id):
+    player = Player.objects.get(session=session_id, session_player_id=player_id)
     roll = random.randint(1, 6)
     start_tile = player.position  # assuming it's an integer ID
 
@@ -82,7 +82,19 @@ def join_session(request, session_id):
     if not available_colors:
         return Response({"error": "No available colors"}, status=400)
 
-    player = Player.objects.create(name=name, color=available_colors[0], session=session, position=22)
+    # Get next session-specific ID
+    used_ids = session.players.values_list('session_player_id', flat=True)
+    next_id = 1
+    while next_id in used_ids:
+        next_id += 1
+
+    player = Player.objects.create(
+        name=name,
+        color=available_colors[0],
+        session=session,
+        position=22,
+        session_player_id=next_id
+    )
     serializer = PlayerSerializer(player)
     return Response(serializer.data)
 
@@ -97,6 +109,7 @@ def get_session_state(request, session_id):
         "players": [
             {
                 "name": p.name,
+                "session player id": p.session_player_id,
                 "color": p.color,
                 "chips": {
                     "red": p.has_red_chip,

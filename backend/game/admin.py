@@ -11,6 +11,6 @@ class QuestionAdmin(admin.ModelAdmin):
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Category)
 admin.site.register(GameSession)
-admin.site.site_header = "Question Editor"
-admin.site.site_title = "Admin Portal"
+admin.site.site_header = "Teacher Administration Panel"
+admin.site.site_title = "Teacher Administration Portal"
 admin.site.index_title = "Welcome, educators!"

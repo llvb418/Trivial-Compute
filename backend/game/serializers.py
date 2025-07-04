@@ -16,4 +16,4 @@ class QuestionSerializer(serializers.ModelSerializer):
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['id', 'name', 'position', 'session']
+        fields = ['id', 'name', 'position', 'session', 'session_player_id']

@@ -34,9 +34,9 @@ function GamePage() {
   //get the simulated dice roll number from the backend
   const fetchDiceRoll = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/`);
+      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/1/`, {method: "POST"}); // temp roll dice for player one
       const data = await res.json();
-      setDiceRoll(data.roll_result);
+      setDiceRoll(data);
       console.log("🎲 Rolled:", data.roll_result);
     } catch (err) {
       console.error("❌ Error rolling dice:", err);
@@ -82,7 +82,7 @@ function GamePage() {
       )}
 
       {diceRoll !== null && (
-        <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll}</strong></p>
+        <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll.roll}</strong></p>
       )}
 
       {question && (

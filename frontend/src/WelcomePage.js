@@ -40,22 +40,23 @@ function WelcomePage() {
       console.log("✅ Session started:", session_id);
 
       // Step 2: Join session for each player
-      const playerResponses = await Promise.all(
-        validPlayers.map(async (player) => {
-          const res = await fetch(`http://127.0.0.1:8000/api/join-session/${session_id}/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: player.name }),
-          });
+      const playerResponses = [];
 
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`Failed to add ${player.name}: ${errorText}`);
-          }
+      for (const player of validPlayers) {
+        const res = await fetch(`http://127.0.0.1:8000/api/join-session/${session_id}/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: player.name }),
+        });
 
-          return res.json();
-        })
-      );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Failed to add ${player.name}: ${errorText}`);
+        }
+
+        const playerData = await res.json();
+        playerResponses.push(playerData);
+      }
 
       console.log("✅ All players joined:", playerResponses);
 

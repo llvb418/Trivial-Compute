@@ -24,6 +24,13 @@ function GamePage() {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-question/`);
       const data = await res.json();
+
+      // check if questions are empty
+      if (data.error) {
+        console.error("No questions are available")
+        setQuestion({ error: data.error })
+        return
+      }
       setQuestion(data);
       console.log("✅ Question:", data);
     } catch (err) {
@@ -34,7 +41,7 @@ function GamePage() {
   //get the simulated dice roll number from the backend
   const fetchDiceRoll = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/1/`, {method: "POST"}); // temp roll dice for player one
+      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/1/`, { method: "POST" }); // temp roll dice for player one
       const data = await res.json();
       setDiceRoll(data);
       console.log("🎲 Rolled:", data.roll_result);
@@ -73,7 +80,7 @@ function GamePage() {
           👥 Get Player Info
         </button>
       </div>
-    
+
       {gameState && (
         <div className="mb-4">
           <p className="text-lg">🆔 Session ID: <strong>{sessionId}</strong></p>
@@ -88,13 +95,19 @@ function GamePage() {
       {question && (
         <div className="mt-4 p-4 border border-gray-300 rounded">
           <h2 className="text-xl font-semibold">📘 Question</h2>
-          <p><strong>{question.question_text}</strong></p>
-          {question.options && (
-            <ul className="list-disc ml-6 mt-2">
-              {question.options.map((opt, idx) => (
-                <li key={idx}>{opt.text}</li>
-              ))}
-            </ul>
+          {question.error ? (
+            <p className="text-red-500">There are no questions.</p>
+          ) : (
+            <>
+              <p><strong>{question.question_text}</strong></p>
+              {question.options && (
+                <ul className="list-disc ml-6 mt-2">
+                  {question.options.map((opt, idx) => (
+                    <li key={idx}>{opt.text}</li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
         </div>
       )}
@@ -115,6 +128,3 @@ function GamePage() {
 }
 
 export default GamePage;
-
-
-

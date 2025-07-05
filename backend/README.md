@@ -6,11 +6,11 @@ This is the backend for **Trivial Compute**, a simplified online trivia game ins
 
 ## Folder Structure
 
-- `config/` – Django project settings  
-- `game/` – Django app for game logic (questions, answers, etc.)  
-- `venv/` – Python virtual environment  
-- `db.sqlite3` – SQLite database  
-- `manage.py` – Django project management tool  
+- `config/` – Django project settings
+- `game/` – Django app for game logic (questions, answers, etc.)
+- `venv/` – Python virtual environment
+- `db.sqlite3` – SQLite database
+- `manage.py` – Django project management tool
 - `requirements.txt` – Project dependencies
 
 ---
@@ -23,7 +23,7 @@ This is the backend for **Trivial Compute**, a simplified online trivia game ins
 ```bash
 venv\Scripts\activate
 ```
-**macOS:** 
+**macOS:**
 ```bash
 source venv/bin/activate
 ```
@@ -54,7 +54,7 @@ Access the backend at:
 http://localhost:8000/
 
 Test the existing questions at:
-http://localhost:8000/api/get-question/ 
+http://localhost:8000/api/get-question/
 
 In order for the random question page to work, you need to have set up the database and added questions. To add questions to the database if you have not already, see [Admin Panel](#admin-panel)
 
@@ -68,7 +68,7 @@ To add questions and categories through the admin interface:
 python manage.py createsuperuser
 ```
 
-I just used 
+I just used
 - user = admin
 - password = admin
 
@@ -104,5 +104,5 @@ From here you can:
 27          28          29
 30          31          32
 33          34          35
-36 37 38 39 40 41 42 43 44 
+36 37 38 39 40 41 42 43 44
 ```

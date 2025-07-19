@@ -42,6 +42,19 @@ class GameSession(models.Model):
     current_turn = models.IntegerField(default=0)  # 0-3 for turn order
     is_active = models.BooleanField(default=True)
 
+    category_c1 = models.CharField(max_length=100, default='C1')
+    category_c2 = models.CharField(max_length=100, default='C2')
+    category_c3 = models.CharField(max_length=100, default='C3')
+    category_c4 = models.CharField(max_length=100, default='C4')
+
+    def get_category_mapping(self):
+        return {
+            "C1": self.category_c1,
+            "C2": self.category_c2,
+            "C3": self.category_c3,
+            "C4": self.category_c4
+        }
+
     def __str__(self):
         return f"Session {self.id} (Turn {self.current_turn})"
     
@@ -89,16 +102,46 @@ class Player(models.Model):
         return f"{self.name} ({self.color}, pos {self.position})"
 
 class Tile(models.Model):
-    TILE_TYPES = [
-        ('NORMAL', 'Normal'),
-        ('HQ', 'Headquarters'),
-        ('ROLL_AGAIN', 'Roll Again'),
-        ('START', 'Start'),
-    ]
+    session = models.ForeignKey("GameSession", on_delete=models.CASCADE, related_name="tiles", default=1)
+    position = models.IntegerField(default=0)
+    label = models.CharField(max_length=100, default="C1")
+    neighbors = models.JSONField(default=list)  # stores list of neighbor tile numbers
 
-    index = models.IntegerField(unique=True)
-    tile_type = models.CharField(max_length=10, choices=TILE_TYPES, default='NORMAL')
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
-   
     def __str__(self):
-        return f"Tile {self.index} ({self.tile_type}, {self.category})"
+        return f"Tile {self.position}: {self.label}"
+
+class Board:
+    def __init__(self, tiles):
+        """
+        Initialize the Board with a list of Tile objects.
+        Also initializes player positions as an empty dictionary.
+        """
+        self.id = None  # Optional: set by database or system
+        self.tiles = tiles  # List of Tile objects
+        self.player_positions = {}  # Maps player ID to tile index
+
+    def get_state(self):
+        """
+        Returns a string summary of all player positions on the board.
+        """
+        state_lines = []
+        for player_id, tile_index in self.player_positions.items():
+            state_lines.append(f"Player {player_id} is at tile {tile_index}")
+        return "\n".join(state_lines)
+
+    def query_tile(self, index):
+        """
+        Returns the category of the tile at the given index.
+        """
+        for tile in self.tiles:
+            if tile.index == index and tile.tile_type == 'NORMAL':
+                return tile.category
+        return None
+
+    def place_player(self, player_id, index=0):
+        """
+        Places a player on the board at the specified tile index (default: start position).
+        """
+        if index < 0 or index >= len(self.tiles):
+            raise ValueError("Invalid tile index.")
+        self.player_positions[player_id] = index

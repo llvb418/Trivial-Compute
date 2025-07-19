@@ -6,7 +6,8 @@ from .serializers import *
 from django.http import HttpResponse
 import random
 from rest_framework.decorators import api_view
-from .game_logic import find_tiles_at_distance
+from .game_logic import find_tiles_at_distance, get_game_board
+from .utils import init_board_for_session
 
 def home(request):
     return HttpResponse("Welcome to the Trivial Compute backend.")
@@ -64,8 +65,22 @@ def roll_dice(request, session_id, player_id):
 
 @api_view(['POST'])
 def start_session(request):
-    session = GameSession.objects.create()
-    return Response({"session_id": session.id})
+    categories = request.data.get("categories", {})
+
+    # Default if not all provided
+    default_mapping = {"C1": "C1", "C2": "C2", "C3": "C3", "C4": "C4"}
+    final_mapping = {k: categories.get(k, v) for k, v in default_mapping.items()}
+
+    session = GameSession.objects.create(
+        category_c1=final_mapping["C1"],
+        category_c2=final_mapping["C2"],
+        category_c3=final_mapping["C3"],
+        category_c4=final_mapping["C4"],
+    )
+
+    init_board_for_session(session)
+
+    return Response({"session_id": session.id, "categories": final_mapping})
 
 @api_view(['POST'])
 def join_session(request, session_id):
@@ -142,3 +157,7 @@ def update_position(request, player_id):
     player.position = position
     player.save()
     return Response({"message": f"{player.name}'s position updated to {position}."})
+
+@api_view(['GET'])
+def get_board(request, session_id):
+    return get_game_board(session_id)

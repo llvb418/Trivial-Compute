@@ -92,72 +92,87 @@ useEffect(() => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-12">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">🎲 Welcome to Trivial Compute!</h1>
-      <img
+    <>
+      {/* Teacher Admin button positioned out of the way */}
+      <div className="flex justify-end max-w-xl mx-auto mt-4">
+        <a
+          href="http://localhost:8000/admin/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-900 text-sm"
+        >
+          🔑 Teachers/Administrators
+        </a>
+      </div>
+
+      <div className="relative max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">🎲 Welcome to Trivial Compute!</h1>
+        <img
           src="/Trivial_Compute.png"
           alt="Trivial Compute Logo"
           className="mx-auto mb-4"
           style={{ width: "1200px", height: "auto", maxWidth: "100%" }}
         />
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2 text-gray-700">👤 Enter Player Names:</h2>
-        {players.map((player, index) => (
-          <input
-            key={index}
-            type="text"
-            value={player.name}
-            onChange={(e) => handlePlayerChange(index, e)}
-            placeholder={`Player ${index + 1}`}
-            className="w-full px-3 py-2 border border-gray-300 rounded mt-1 mb-2"
-          />
-        ))}
-        {players.length < 4 && (
-          <button
-            onClick={addPlayer}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            ➕ Add Player
-          </button>
-        )}
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2 text-gray-700">👤 Enter Player Names:</h2>
+          {players.map((player, index) => (
+            <input
+              key={index}
+              type="text"
+              value={player.name}
+              onChange={(e) => handlePlayerChange(index, e)}
+              placeholder={`Player ${index + 1}`}
+              className="w-full px-3 py-2 border border-gray-300 rounded mt-1 mb-2"
+            />
+          ))}
+          {players.length < 4 && (
+            <button
+              onClick={addPlayer}
+              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              ➕ Add Player
+            </button>
+          )}
+        </div>
+
+        <div className="text-left mb-4">
+          <h2 className="text-lg font-semibold mb-2 text-gray-700">📚 Choose 4 Categories:</h2>
+          {selectedCategories.map((selected, index) => {
+            // Get the categories selected in other dropdowns
+            const otherSelected = selectedCategories.filter((_, i) => i !== index);
+
+            // Build the list of available categories
+            const availableOptions = categories.filter(
+              (cat) => !otherSelected.includes(cat) || cat === selected
+            );
+
+            return (
+              <select
+                key={index}
+                value={selected}
+                onChange={(e) => handleCategoryChange(index, e)}
+              >
+                <option value="">-- Select a Category --</option>
+                {availableOptions.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700"
+        >
+          🚀 Start Game
+        </button>
       </div>
-
-      <div className="text-left mb-4">
-        <h2 className="text-lg font-semibold mb-2 text-gray-700">📚 Choose 4 Categories:</h2>
-       {selectedCategories.map((selected, index) => {
-        // Get the categories selected in other dropdowns
-        const otherSelected = selectedCategories.filter((_, i) => i !== index);
-
-        // Build the list of available categories
-        const availableOptions = categories.filter(
-          (cat) => !otherSelected.includes(cat) || cat === selected
-        );
-
-        return (
-          <select
-            key={index}
-            value={selected}
-            onChange={(e) => handleCategoryChange(index, e)}
-          >
-            <option value="">-- Select a Category --</option>
-            {availableOptions.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        );
-        })}
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700"
-      >
-        🚀 Start Game
-      </button>
-    </div>
+    </>
   );
 };
 
 export default WelcomePage;
+

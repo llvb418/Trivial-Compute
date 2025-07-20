@@ -9,6 +9,9 @@ function GamePage() {
   const [playerInfo, setPlayerInfo] = useState(null);
   const [categories, setCategories] = useState(null);
 
+  // NEW: track current player
+  const [currentPlayer, setCurrentPlayer] = useState(1);
+
   //get the game session id from the backend
   const fetchGameState = async () => {
     try {
@@ -20,6 +23,7 @@ function GamePage() {
       console.error("❌ Failed to fetch game state:", err);
     }
   };
+
   //get a random question from the backend
   const fetchQuestion = async () => {
     try {
@@ -39,13 +43,13 @@ function GamePage() {
     }
   };
 
-  //get the simulated dice roll number from the backend
+  //get the simulated dice roll number from the backend (now uses currentPlayer)
   const fetchDiceRoll = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/1/`, { method: "POST" }); // temp roll dice for player one
+      const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/${currentPlayer}/`, { method: "POST" });
       const data = await res.json();
       setDiceRoll(data);
-      console.log("🎲 Rolled:", data.roll_result);
+      console.log(`🎲 Player ${currentPlayer} rolled:`, data.roll_result);
     } catch (err) {
       console.error("❌ Error rolling dice:", err);
     }
@@ -85,6 +89,18 @@ function GamePage() {
     }
   };
 
+  // NEW: handle next player rotation
+  const nextPlayer = () => {
+    if (!playerInfo || playerInfo.length === 0) {
+      alert("Load player info first!");
+      return;
+    }
+    setCurrentPlayer((prev) => {
+      const next = prev + 1;
+      return next > playerInfo.length ? 1 : next;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
@@ -97,7 +113,7 @@ function GamePage() {
           ❓ Get Question
         </button>
         <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
-          🎲 Roll Dice
+          🎲 Roll Dice (Player {currentPlayer})
         </button>
         <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">
           👥 Get Player Info
@@ -108,8 +124,14 @@ function GamePage() {
         <button onClick={fetchBoard} className="bg-orange-500 text-white px-4 py-2 rounded">
           Board
         </button>
-
+        {/* NEW: Next Player button */}
+        <button onClick={nextPlayer} className="bg-pink-500 text-white px-4 py-2 rounded">
+          👉 Next Player
+        </button>
       </div>
+
+      {/* NEW: Display Current Player */}
+      <p className="text-lg mb-4">🎮 Current Player: <strong>{currentPlayer}</strong></p>
 
       {categories !== null && (
         <p className="text-lg"> Categories: <strong>{JSON.stringify(categories)}</strong></p>

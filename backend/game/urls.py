@@ -11,4 +11,7 @@ urlpatterns = [
     path('award-chip/<int:player_id>/', views.award_chip, name='award-chip'),
     path('update-position/<int:player_id>/', views.update_position, name='update-position'),
     path('get-board/<int:session_id>/', views.get_board, name='get-board'),
+    path('categories/', views.list_categories, name='categories'),
+    path('session-categories/<int:session_id>/', views.list_session_categories, name='session-categories'),
+
 ]

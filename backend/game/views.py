@@ -161,3 +161,13 @@ def update_position(request, player_id):
 @api_view(['GET'])
 def get_board(request, session_id):
     return get_game_board(session_id)
+
+@api_view(['GET'])
+def list_categories(request):
+    categories = Category.objects.all().values_list('name', flat=True)
+    return Response(list(categories))
+
+@api_view(['GET'])
+def list_session_categories(request, session_id):
+    session = get_object_or_404(GameSession, id=session_id)
+    return Response(session.get_category_mapping())

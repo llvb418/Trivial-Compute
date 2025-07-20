@@ -7,6 +7,7 @@ function GamePage() {
   const [question, setQuestion] = useState(null);
   const [diceRoll, setDiceRoll] = useState(null);
   const [playerInfo, setPlayerInfo] = useState(null);
+  const [categories, setCategories] = useState(null);
 
   //get the game session id from the backend
   const fetchGameState = async () => {
@@ -62,6 +63,17 @@ function GamePage() {
     }
   };
 
+  const fetchCategoryInfo = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`);
+      const data = await res.json();
+      setCategories(data);
+      console.log("Catagories:", data);
+    } catch (err) {
+      console.error("❌ Error getting category info:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
@@ -79,7 +91,14 @@ function GamePage() {
         <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">
           👥 Get Player Info
         </button>
+        <button onClick={fetchCategoryInfo} className="bg-red-500 text-white px-4 py-2 rounded">
+          Categories
+        </button>
       </div>
+
+      {categories !== null && (
+        <p className="text-lg"> Categories: <strong>{JSON.stringify(categories)}</strong></p>
+      )}
 
       {gameState && (
         <div className="mb-4">

@@ -5,6 +5,7 @@ function GamePage() {
   const { sessionId } = useParams();
   const [gameState, setGameState] = useState(null);
   const [question, setQuestion] = useState(null);
+  const [answer, setAnswer] = useState(null);
   const [diceRoll, setDiceRoll] = useState(null);
   const [playerInfo, setPlayerInfo] = useState(null);
   const [categories, setCategories] = useState(null);
@@ -101,6 +102,20 @@ function GamePage() {
     });
   };
 
+  const getAnswer = async () => {
+    try {
+      if (question.error) {
+        console.error("Get a question first")
+        setAnswer({ error: data.error })
+        return
+      }
+      setAnswer(question.answer);
+      console.log("✅ Answer:", question.answer);
+    } catch (err) {
+      console.error("❌ Failed to get answer:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
@@ -127,6 +142,9 @@ function GamePage() {
         {/* NEW: Next Player button */}
         <button onClick={nextPlayer} className="bg-pink-500 text-white px-4 py-2 rounded">
           👉 Next Player
+        </button>
+        <button onClick={getAnswer} className="bg-pink-500 text-white px-4 py-2 rounded">
+          Reveal Answer
         </button>
       </div>
 
@@ -166,6 +184,10 @@ function GamePage() {
             </>
           )}
         </div>
+      )}
+
+      {answer !== null && (
+        <p className="text-lg">Answer: <strong>{answer}</strong></p>
       )}
 
       {playerInfo && (

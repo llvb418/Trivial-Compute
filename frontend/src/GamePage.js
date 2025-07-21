@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import Board from "./Board";
 
 function GamePage() {
   const { sessionId } = useParams();
@@ -21,8 +22,9 @@ function GamePage() {
     C4: "#fbbf24"    // yellow
   };
 
-    useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)  // <- your actual endpoint
+  // fetch player session state and categories
+  useEffect(() => {
+    axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)
       .then((response) => {
         setCurrentPlayer(response.data.current_turn);
         setPlayerInfo(response.data.players)
@@ -30,27 +32,28 @@ function GamePage() {
       .catch((error) => {
         console.error("Error fetching session info:", error);
       });
-      axios.get(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`)  // <- your actual endpoint
+
+    axios.get(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`)
       .then((response) => {
         setCategories(response.data)
       })
       .catch((error) => {
-        console.error("Error fetching session info:", error);
+        console.error("Error fetching category info:", error);
       });
   }, [sessionId]);
 
-  //get a random question from the backend
+  // get a random question from the backend
   const fetchQuestion = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-question/`);
       const data = await res.json();
 
-      // check if questions are empty
       if (data.error) {
-        console.error("No questions are available")
-        setQuestion({ error: data.error })
-        return
+        console.error("No questions are available");
+        setQuestion({ error: data.error });
+        return;
       }
+
       setQuestion(data);
       setQuestionData(data); // assume { question: '', answer: '' }
       setShowQuestion(true);
@@ -61,7 +64,7 @@ function GamePage() {
     }
   };
 
-  //get the simulated dice roll number from the backend (now uses currentPlayer)
+  // get the simulated dice roll number from the backend
   const fetchDiceRoll = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/${currentPlayer}/`, { method: "POST" });
@@ -73,18 +76,18 @@ function GamePage() {
     }
   };
 
+  // for testing board loading
   const fetchBoard = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-board/${sessionId}/`);
       const data = await res.json();
-      // setCategories(data);
-      console.log("Catagories:", data);
+      console.log("Board Data:", data);
     } catch (err) {
-      console.error("❌ Error getting category info:", err);
+      console.error("❌ Error getting board info:", err);
     }
   };
 
-  // NEW: handle next player rotation
+  // handle next player rotation
   const nextPlayer = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/new-turn/${sessionId}/`);
@@ -96,28 +99,29 @@ function GamePage() {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-white p-6">
       {sessionId && (<h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game #{sessionId}</h1>)}
 
+      {/* Category Labels */}
       {categories && (
-      <div className="flex justify-center gap-4 mb-6">
-        {Object.entries(categories).map(([key, label]) => (
-          <div
-            key={key}
-            className="px-4 py-2 rounded font-semibold shadow"
-            style={{
-              backgroundColor: categoryColors[key],
-              color: "#000", // optionally use contrast logic here
-            }}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-    )}
+        <div className="flex justify-center gap-4 mb-6">
+          {Object.entries(categories).map(([key, label]) => (
+            <div
+              key={key}
+              className="px-4 py-2 rounded font-semibold shadow"
+              style={{
+                backgroundColor: categoryColors[key],
+                color: "#000",
+              }}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
+      )}
 
+      {/* Game Buttons */}
       <div className="space-x-2 mb-6">
         <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">
           ❓ Get Question
@@ -126,17 +130,19 @@ function GamePage() {
           🎲 Roll Dice (Player {currentPlayer})
         </button>
         <button onClick={fetchBoard} className="bg-orange-500 text-white px-4 py-2 rounded">
-          Board
+          🔄 Debug Board Fetch
         </button>
       </div>
 
-      {/* NEW: Display Current Player */}
+      {/* Current Player */}
       <p className="text-lg mb-4">🎮 Current Player: <strong>{currentPlayer}</strong></p>
 
+      {/* Dice Roll Result */}
       {diceRoll !== null && (
         <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll.roll}</strong></p>
       )}
 
+      {/* Question Modal */}
       {showQuestion && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg text-center">
@@ -153,18 +159,16 @@ function GamePage() {
             ) : (
               <>
                 <p className="text-green-700 font-bold mb-4">{questionData?.answer}</p>
-                {/* Add something for player to roll again */}
                 <button
                   onClick={() => setShowQuestion(false)}
                   className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
                 >
                   Correct
                 </button>
-                {/* If incorrect, go to the next player */}
                 <button
                   onClick={() => {
                     setShowQuestion(false);
-                    nextPlayer(); // your existing function
+                    nextPlayer();
                   }}
                   className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
                 >
@@ -176,6 +180,13 @@ function GamePage() {
         </div>
       )}
 
+      {/* Game Board */}
+      <div className="my-8">
+        <h2 className="text-xl font-bold mb-2">📍 Game Board</h2>
+        <Board sessionId={sessionId} />
+      </div>
+
+      {/* Player Info */}
       {playerInfo && (
         <div className="mt-6">
           <h2 className="text-xl font-bold mb-2">👤 Players</h2>

@@ -10,12 +10,29 @@ function GamePage() {
   const [playerInfo, setPlayerInfo] = useState(null);
   const [categories, setCategories] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(null);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [questionData, setQuestionData] = useState(null); // { question: '', answer: '' }
 
-  useEffect(() => {
+  const categoryColors = {
+    C1: "#f87171",   // red
+    C2: "#34d399",   // green
+    C3: "#60a5fa",   // blue
+    C4: "#fbbf24"    // yellow
+  };
+
+    useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)  // <- your actual endpoint
       .then((response) => {
         setCurrentPlayer(response.data.current_turn);
         setPlayerInfo(response.data.players)
+      })
+      .catch((error) => {
+        console.error("Error fetching session info:", error);
+      });
+      axios.get(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`)  // <- your actual endpoint
+      .then((response) => {
+        setCategories(response.data)
       })
       .catch((error) => {
         console.error("Error fetching session info:", error);
@@ -35,6 +52,9 @@ function GamePage() {
         return
       }
       setQuestion(data);
+      setQuestionData(data); // assume { question: '', answer: '' }
+      setShowQuestion(true);
+      setShowAnswer(false);
       console.log("✅ Question:", data);
     } catch (err) {
       console.error("❌ Failed to get question:", err);
@@ -53,22 +73,11 @@ function GamePage() {
     }
   };
 
-  const fetchCategoryInfo = async () => {
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`);
-      const data = await res.json();
-      setCategories(data);
-      console.log("Catagories:", data);
-    } catch (err) {
-      console.error("❌ Error getting category info:", err);
-    }
-  };
-
   const fetchBoard = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-board/${sessionId}/`);
       const data = await res.json();
-      setCategories(data);
+      // setCategories(data);
       console.log("Catagories:", data);
     } catch (err) {
       console.error("❌ Error getting category info:", err);
@@ -87,23 +96,27 @@ function GamePage() {
     }
   };
 
-  const getAnswer = async () => {
-    try {
-      if (question.error) {
-        console.error("Get a question first")
-        setAnswer({ error: data.error })
-        return
-      }
-      setAnswer(question.answer);
-      console.log("✅ Answer:", question.answer);
-    } catch (err) {
-      console.error("❌ Failed to get answer:", err);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
+
+      {categories && (
+      <div className="flex justify-center gap-4 mb-6">
+        {Object.entries(categories).map(([key, label]) => (
+          <div
+            key={key}
+            className="px-4 py-2 rounded font-semibold shadow"
+            style={{
+              backgroundColor: categoryColors[key],
+              color: "#000", // optionally use contrast logic here
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
+    )}
 
       <div className="space-x-2 mb-6">
         <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">
@@ -112,18 +125,8 @@ function GamePage() {
         <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
           🎲 Roll Dice (Player {currentPlayer})
         </button>
-        <button onClick={fetchCategoryInfo} className="bg-red-500 text-white px-4 py-2 rounded">
-          Categories
-        </button>
         <button onClick={fetchBoard} className="bg-orange-500 text-white px-4 py-2 rounded">
           Board
-        </button>
-        {/* NEW: Next Player button */}
-        <button onClick={nextPlayer} className="bg-pink-500 text-white px-4 py-2 rounded">
-          👉 Next Player
-        </button>
-        <button onClick={getAnswer} className="bg-pink-500 text-white px-4 py-2 rounded">
-          Reveal Answer
         </button>
       </div>
 
@@ -145,28 +148,43 @@ function GamePage() {
         <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll.roll}</strong></p>
       )}
 
-      {question && (
-        <div className="mt-4 p-4 border border-gray-300 rounded">
-          <h2 className="text-xl font-semibold">📘 Question</h2>
-          {question.error ? (
-            <p className="text-red-500">There are no questions.</p>
-          ) : (
-            <>
-              <p><strong>{question.question_text}</strong></p>
-              {question.options && (
-                <ul className="list-disc ml-6 mt-2">
-                  {question.options.map((opt, idx) => (
-                    <li key={idx}>{opt.text}</li>
-                  ))}
-                </ul>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {showQuestion && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg text-center">
+            <h2 className="text-xl font-semibold mb-4">Question</h2>
+            <p className="text-lg mb-4">{questionData?.question_text}</p>
 
-      {answer !== null && (
-        <p className="text-lg">Answer: <strong>{answer}</strong></p>
+            {!showAnswer ? (
+              <button
+                onClick={() => setShowAnswer(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Show Answer
+              </button>
+            ) : (
+              <>
+                <p className="text-green-700 font-bold mb-4">{questionData?.answer}</p>
+                {/* Add something for player to roll again */}
+                <button
+                  onClick={() => setShowQuestion(false)}
+                  className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+                >
+                  Correct
+                </button>
+                {/* If incorrect, go to the next player */}
+                <button
+                  onClick={() => {
+                    setShowQuestion(false);
+                    nextPlayer(); // your existing function
+                  }}
+                  className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+                >
+                  Incorrect
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
 
       {playerInfo && (

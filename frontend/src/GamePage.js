@@ -182,7 +182,6 @@ function GamePage() {
 
       {/* Game Board */}
       <div className="my-8">
-        <h2 className="text-xl font-bold mb-2">📍 Game Board</h2>
         <Board sessionId={sessionId} />
       </div>
 

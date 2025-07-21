@@ -182,7 +182,7 @@ function GamePage() {
 
       {/* Game Board */}
       <div className="my-8">
-        <Board sessionId={sessionId} />
+        <Board sessionId={sessionId} playerInfo={playerInfo} />
       </div>
 
       {/* Player Info */}

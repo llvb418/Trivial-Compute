@@ -26,7 +26,7 @@ const tileColors = {
   HQ4: 'bg-gray-400',
 };
 
-function Board({ sessionId }) {
+function Board({ sessionId, playerInfo }) {
   const [tiles, setTiles] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -63,14 +63,37 @@ function Board({ sessionId }) {
         return (
           <div
             key={tileId}
-            className={`w-16 h-16 border rounded-md flex items-center justify-center text-sm font-semibold ${colorClass}`}
+            className={`relative w-16 h-16 border rounded-md flex items-center justify-center text-[10px] font-semibold ${colorClass}`}
           >
-            {tileType}
+            <span className="z-0">{tileType}</span>
+
+            {/* Player Tokens */}
+            {playerInfo?.map((player, index) => {
+              if (player.position === tileId) {
+                return (
+                  <div
+                    key={player.name}
+                    className="absolute rounded-full border border-black"
+                    style={{
+                      backgroundColor: player.color,
+                      width: "16px",
+                      height: "16px",
+                      top: `${4 + index * 16}px`,
+                      left: `${4 + (index % 2) * 16}px`,
+                      zIndex: 10 + index,
+                    }}
+                    title={player.name}
+                  />
+                );
+              }
+              return null;
+            })}
           </div>
         );
       })}
     </div>
   );
 }
+
 
 export default Board;

@@ -4,7 +4,6 @@ import axios from 'axios';
 
 function GamePage() {
   const { sessionId } = useParams();
-  const [gameState, setGameState] = useState(null);
   const [question, setQuestion] = useState(null);
   const [answer, setAnswer] = useState(null);
   const [diceRoll, setDiceRoll] = useState(null);
@@ -16,24 +15,12 @@ function GamePage() {
     axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)  // <- your actual endpoint
       .then((response) => {
         setCurrentPlayer(response.data.current_turn);
+        setPlayerInfo(response.data.players)
       })
       .catch((error) => {
         console.error("Error fetching session info:", error);
       });
   }, [sessionId]);
-
-
-  //get the game session id from the backend
-  const fetchGameState = async () => {
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
-      const data = await res.json();
-      setGameState(data);
-      console.log("✅ Game state:", data);
-    } catch (err) {
-      console.error("❌ Failed to fetch game state:", err);
-    }
-  };
 
   //get a random question from the backend
   const fetchQuestion = async () => {
@@ -63,18 +50,6 @@ function GamePage() {
       console.log(`🎲 Player ${currentPlayer} rolled:`, data.roll_result);
     } catch (err) {
       console.error("❌ Error rolling dice:", err);
-    }
-  };
-
-  //get player info for corresponding game session from backend
-  const fetchPlayerInfo = async () => {
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
-      const data = await res.json();
-      setPlayerInfo(data.players);
-      console.log("✅ Players:", data.players);
-    } catch (err) {
-      console.error("❌ Error getting player info:", err);
     }
   };
 
@@ -131,17 +106,11 @@ function GamePage() {
       <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
 
       <div className="space-x-2 mb-6">
-        <button onClick={fetchGameState} className="bg-blue-500 text-white px-4 py-2 rounded">
-          🔄 Get Game State
-        </button>
         <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">
           ❓ Get Question
         </button>
         <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
           🎲 Roll Dice (Player {currentPlayer})
-        </button>
-        <button onClick={fetchPlayerInfo} className="bg-yellow-500 text-white px-4 py-2 rounded">
-          👥 Get Player Info
         </button>
         <button onClick={fetchCategoryInfo} className="bg-red-500 text-white px-4 py-2 rounded">
           Categories
@@ -165,7 +134,7 @@ function GamePage() {
         <p className="text-lg"> Categories: <strong>{JSON.stringify(categories)}</strong></p>
       )}
 
-      {gameState && (
+      {sessionId && (
         <div className="mb-4">
           <p className="text-lg">🆔 Session ID: <strong>{sessionId}</strong></p>
           {/* You can show more game state info here if needed */}

@@ -99,7 +99,7 @@ function GamePage() {
 
   return (
     <div className="min-h-screen bg-white p-6">
-      <h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game</h1>
+      {sessionId && (<h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game #{sessionId}</h1>)}
 
       {categories && (
       <div className="flex justify-center gap-4 mb-6">
@@ -132,17 +132,6 @@ function GamePage() {
 
       {/* NEW: Display Current Player */}
       <p className="text-lg mb-4">🎮 Current Player: <strong>{currentPlayer}</strong></p>
-
-      {categories !== null && (
-        <p className="text-lg"> Categories: <strong>{JSON.stringify(categories)}</strong></p>
-      )}
-
-      {sessionId && (
-        <div className="mb-4">
-          <p className="text-lg">🆔 Session ID: <strong>{sessionId}</strong></p>
-          {/* You can show more game state info here if needed */}
-        </div>
-      )}
 
       {diceRoll !== null && (
         <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll.roll}</strong></p>

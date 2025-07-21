@@ -39,7 +39,7 @@ class AnswerOption(models.Model):
     
 class GameSession(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    current_turn = models.IntegerField(default=0)  # 0-3 for turn order
+    current_turn = models.IntegerField(default=1)  # 0-3 for turn order
     is_active = models.BooleanField(default=True)
 
     category_c1 = models.CharField(max_length=100, default='C1')
@@ -54,6 +54,10 @@ class GameSession(models.Model):
             "C3": self.category_c3,
             "C4": self.category_c4
         }
+    
+    def next_turn(self):
+        self.current_turn = (self.current_turn % 4) + 1
+        self.save()
 
     def __str__(self):
         return f"Session {self.id} (Turn {self.current_turn})"

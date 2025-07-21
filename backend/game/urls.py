@@ -13,5 +13,5 @@ urlpatterns = [
     path('get-board/<int:session_id>/', views.get_board, name='get-board'),
     path('categories/', views.list_categories, name='categories'),
     path('session-categories/<int:session_id>/', views.list_session_categories, name='session-categories'),
-
+    path('new-turn/<int:session_id>/', views.new_turn, name='new-turn'),
 ]

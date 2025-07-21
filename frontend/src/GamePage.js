@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from 'axios';
 
 function GamePage() {
   const { sessionId } = useParams();
@@ -9,9 +10,18 @@ function GamePage() {
   const [diceRoll, setDiceRoll] = useState(null);
   const [playerInfo, setPlayerInfo] = useState(null);
   const [categories, setCategories] = useState(null);
+  const [currentPlayer, setCurrentPlayer] = useState(null);
 
-  // NEW: track current player
-  const [currentPlayer, setCurrentPlayer] = useState(1);
+  useEffect(() => {
+    axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)  // <- your actual endpoint
+      .then((response) => {
+        setCurrentPlayer(response.data.current_turn);
+      })
+      .catch((error) => {
+        console.error("Error fetching session info:", error);
+      });
+  }, [sessionId]);
+
 
   //get the game session id from the backend
   const fetchGameState = async () => {
@@ -91,15 +101,15 @@ function GamePage() {
   };
 
   // NEW: handle next player rotation
-  const nextPlayer = () => {
-    if (!playerInfo || playerInfo.length === 0) {
-      alert("Load player info first!");
-      return;
+  const nextPlayer = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/new-turn/${sessionId}/`);
+      const data = await res.json();
+      setCurrentPlayer(data.current_turn);
+      console.log("current player:", data);
+    } catch (err) {
+      console.error("❌ Error getting current player info:", err);
     }
-    setCurrentPlayer((prev) => {
-      const next = prev + 1;
-      return next > playerInfo.length ? 1 : next;
-    });
   };
 
   const getAnswer = async () => {

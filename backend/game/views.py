@@ -171,3 +171,11 @@ def list_categories(request):
 def list_session_categories(request, session_id):
     session = get_object_or_404(GameSession, id=session_id)
     return Response(session.get_category_mapping())
+
+@api_view(['GET'])
+def new_turn(request, session_id):
+    session = GameSession.objects.get(id=session_id)
+    session.next_turn()
+    session.save()
+
+    return Response({"current_turn": session.current_turn})

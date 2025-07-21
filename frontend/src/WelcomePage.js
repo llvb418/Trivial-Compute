@@ -7,6 +7,14 @@ const WelcomePage = () => {
   const [selectedCategories, setSelectedCategories] = useState(["", "", "", ""]);
   const navigate = useNavigate();
 
+  const categoryColors = [
+  "#f87171", // red
+  "#34d399", // green
+  "#60a5fa", // blue
+  "#fbbf24", // yellow
+];
+
+
   // Fetch categories from backend on page load
 useEffect(() => {
   const fetchCategories = async () => {
@@ -136,32 +144,41 @@ useEffect(() => {
         </div>
 
         <div className="text-left mb-4">
-          <h2 className="text-lg font-semibold mb-2 text-gray-700">📚 Choose 4 Categories:</h2>
-          {selectedCategories.map((selected, index) => {
-            // Get the categories selected in other dropdowns
-            const otherSelected = selectedCategories.filter((_, i) => i !== index);
+        <h2 className="text-lg font-semibold mb-2 text-gray-700">📚 Choose 4 Categories:</h2>
 
-            // Build the list of available categories
-            const availableOptions = categories.filter(
-              (cat) => !otherSelected.includes(cat) || cat === selected
-            );
+        {selectedCategories.map((selected, index) => {
+          const otherSelected = selectedCategories.filter((_, i) => i !== index);
 
-            return (
-              <select
-                key={index}
-                value={selected}
-                onChange={(e) => handleCategoryChange(index, e)}
+          const availableOptions = categories.filter(
+            (cat) => !otherSelected.includes(cat) || cat === selected
+          );
+
+          const bgColor = categoryColors[index % categoryColors.length];
+
+          return (
+            <div key={index} className="flex items-center gap-2 mb-3">
+              <div
+                className="p-2 rounded shadow w-full"
+                style={{ backgroundColor: bgColor }}
               >
-                <option value="">-- Select a Category --</option>
-                {availableOptions.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            );
-          })}
-        </div>
+                <select
+                  value={selected}
+                  onChange={(e) => handleCategoryChange(index, e)}
+                  className="w-full p-2 rounded bg-white text-black"
+                >
+                  <option value="">-- Select a Category --</option>
+                  {availableOptions.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
 
         <button
           onClick={handleSubmit}

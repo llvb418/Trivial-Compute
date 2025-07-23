@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import GamePage from './GamePage';
 
 const boardLayout = [
   [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -20,13 +21,13 @@ const tileColors = {
   C4: 'bg-blue-300',
   START: 'bg-purple-400',
   ROLL_AGAIN: 'bg-pink-400',
-  HQ1: 'bg-gray-400',
-  HQ2: 'bg-gray-400',
-  HQ3: 'bg-gray-400',
-  HQ4: 'bg-gray-400',
+  HQ1: 'bg-red-300',
+  HQ2: 'bg-yellow-300',
+  HQ3: 'bg-green-300',
+  HQ4: 'bg-blue-300',
 };
 
-function Board({ sessionId, playerInfo }) {
+function Board({ sessionId, playerInfo, moves, currentPlayer, handleTileClick }) {
   const [tiles, setTiles] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +55,7 @@ function Board({ sessionId, playerInfo }) {
     <div className="grid grid-cols-9 gap-1 p-4 w-fit mx-auto">
       {boardLayout.flat().map((tileId, idx) => {
         if (tileId === null) {
-          return <div key={idx} className="w-16 h-16 bg-transparent" />;
+          return <div key={`null-${idx}`} className="w-16 h-16 bg-transparent" />;
         }
 
         const tileType = tiles[tileId];
@@ -62,10 +63,25 @@ function Board({ sessionId, playerInfo }) {
 
         return (
           <div
-            key={tileId}
-            className={`relative w-16 h-16 border rounded-md flex items-center justify-center text-[10px] font-semibold ${colorClass}`}
+            key={`tile-${tileId}-${idx}`} // ✅ Unique key even if tileId repeats
+            className={`relative w-16 h-16 border rounded-md flex items-center justify-center text-[10px] font-semibold ${colorClass} ${
+              moves?.includes(tileId) ? 'ring-4 ring-indigo-400 cursor-pointer' : ''
+            }`}
+            onClick={() => {
+              if (moves?.includes(tileId)) {
+                handleTileClick(tileId);
+              }
+            }}
           >
+          {tileType === 'ROLL_AGAIN' && (
+            <span className="z-0">{"Roll Again"}</span>
+          )}
+          {tileType === 'START' && (
             <span className="z-0">{tileType}</span>
+          )}
+          {tileType?.includes('HQ') && (
+            <span className="z-0">{tileType}</span>
+          )}
 
             {/* Player Tokens */}
             {playerInfo?.map((player, index) => {

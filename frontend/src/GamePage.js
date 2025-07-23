@@ -8,6 +8,7 @@ function GamePage() {
   const [question, setQuestion] = useState(null);
   const [answer, setAnswer] = useState(null);
   const [diceRoll, setDiceRoll] = useState(null);
+  const [moves, setMoves] = useState([]);
   const [playerInfo, setPlayerInfo] = useState(null);
   const [categories, setCategories] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(null);
@@ -23,24 +24,44 @@ function GamePage() {
   };
 
   // fetch player session state and categories
-  useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`)
-      .then((response) => {
-        setCurrentPlayer(response.data.current_turn);
-        setPlayerInfo(response.data.players)
-      })
-      .catch((error) => {
-        console.error("Error fetching session info:", error);
-      });
+useEffect(() => {
+  fetchSessionState();
+  fetchSessionCategories();
+}, [sessionId]);
 
-    axios.get(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`)
-      .then((response) => {
-        setCategories(response.data)
-      })
-      .catch((error) => {
-        console.error("Error fetching category info:", error);
+
+  const fetchSessionState = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/session-state/${sessionId}/`);
+      setCurrentPlayer(response.data.current_turn);
+      setPlayerInfo(response.data.players);
+    } catch (error) {
+      console.error("Error fetching session info:", error);
+    }
+  };
+
+  const fetchSessionCategories = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/session-categories/${sessionId}/`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching category info:", error);
+    }
+  };
+
+
+  async function handleTileClick(tileId) {
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/update-position/${sessionId}/${currentPlayer}/`, {
+        position: tileId,
       });
-  }, [sessionId]);
+      setMoves([]); // Clear highlights after move
+      // Optionally refetch player info here
+      fetchSessionState();
+    } catch (error) {
+      console.error("Failed to update position:", error);
+    }
+  }
 
   // get a random question from the backend
   const fetchQuestion = async () => {
@@ -70,7 +91,8 @@ function GamePage() {
       const res = await fetch(`http://127.0.0.1:8000/api/roll-dice/${sessionId}/${currentPlayer}/`, { method: "POST" });
       const data = await res.json();
       setDiceRoll(data);
-      console.log(`🎲 Player ${currentPlayer} rolled:`, data.roll_result);
+      setMoves(data.possible_tiles)
+      console.log(`🎲 Player ${currentPlayer} rolled:`, data.possible_tiles);
     } catch (err) {
       console.error("❌ Error rolling dice:", err);
     }
@@ -182,7 +204,8 @@ function GamePage() {
 
       {/* Game Board */}
       <div className="my-8">
-        <Board sessionId={sessionId} playerInfo={playerInfo} />
+        <Board sessionId={sessionId} playerInfo={playerInfo} moves={moves} currentPlayer={currentPlayer} 
+        handleTileClick={handleTileClick}/>
       </div>
 
       {/* Player Info */}

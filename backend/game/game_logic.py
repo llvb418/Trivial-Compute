@@ -6,7 +6,7 @@ tile_graph = {
     0: ('ROLL_AGAIN', [1, 9]), 1: ('C2', [0, 2]), 2: ('C4', [1, 3]), 3: ('C3', [2, 4]), 4: ('HQ1', [3, 5, 10]), 5: ('C2', [4, 6]), 6: ('C4', [5, 7]), 7: ('C3', [6, 8]), 8: ('ROLL_AGAIN', [7, 11]),
     9: ('C1', [0, 12]), 10: ('C2', [4, 13]), 11: ('C1', [8, 14]),
     12: ('C3', [9, 15]), 13: ('C4', [10, 16]), 14: ('C2', [11, 17]),
-    15: ('C4', [12, 18]), 16: ('C3', [13, 22]), 17: ('C4', [14, 24]),
+    15: ('C4', [12, 18]), 16: ('C3', [13, 22]), 17: ('C4', [14, 26]),
     18: ('HQ2', [15, 19, 27]), 19: ('C4', [18, 20]), 20: ('C3', [19, 21]), 21: ('C1', [20, 22]), 22: ('START', [21, 23, 16, 28]), 23: ('C4', [22, 24]), 24: ('C2', [23, 25]), 25: ('C1', [24, 26]), 26: ('HQ3', [17, 25, 29]), 
     27: ('C1', [18, 30]), 28: ('C2', [22, 31]), 29: ('C1', [26, 32]), 
     30: ('C3', [27, 33]), 31: ('C1', [28, 34]), 32: ('C2', [29, 35]), 
@@ -25,10 +25,11 @@ def get_game_board(session_id):
     mapping = session.get_category_mapping()
     board_data = []
     for index, (tile_type, neighbors) in tile_graph.items():
-        display_type = mapping.get(tile_type, tile_type) if tile_type.startswith("C") else tile_type
+        name = mapping.get(tile_type, tile_type) if tile_type.startswith("C") else tile_type
         board_data.append({
             'index': index,
-            'tile_type': display_type,
+            'name': name,
+            'tile_type': tile_type,
             'neighbors': neighbors,
         })
     return Response({'tiles': board_data})

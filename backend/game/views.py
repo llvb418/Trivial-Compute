@@ -147,8 +147,8 @@ def award_chip(request, player_id):
     return Response({"message": f"{player.name} awarded {color} chip."})
 
 @api_view(['POST'])
-def update_position(request, player_id):
-    player = get_object_or_404(Player, id=player_id)
+def update_position(request, session_id, player_id):
+    player = Player.objects.get(session=session_id, session_player_id=player_id)
     position = request.data.get("position")
 
     if position is None:
@@ -156,7 +156,7 @@ def update_position(request, player_id):
 
     player.position = position
     player.save()
-    return Response({"message": f"{player.name}'s position updated to {position}."})
+    return Response({"session_id": {position}})
 
 @api_view(['GET'])
 def get_board(request, session_id):

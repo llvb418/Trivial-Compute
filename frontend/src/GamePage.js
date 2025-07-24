@@ -14,8 +14,10 @@ function GamePage() {
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [AnswerCorrect, setAnswerCorrect] = useState(false);
   const [questionData, setQuestionData] = useState(null); // { question: '', answer: '' }
   const [board, setBoardInfo] = useState(null);
+  const [tile, setTile] = useState(null);
 
   const categoryColors = {
     C1: "#f87171",   // red
@@ -24,12 +26,19 @@ function GamePage() {
     C4: "#60a5fa",   // blue
   };
 
+  const categoryColorNames = {
+    C1: "red",   // red
+    C2: "yellow",    // yellow
+    C3: "green",   // green
+    C4: "blue",   // blue
+  }
+
   // fetch player session state and categories
 useEffect(() => {
   fetchSessionState();
   fetchSessionCategories();
+  fetchBoard();
 }, [sessionId]);
-
 
   const fetchSessionState = async () => {
     try {
@@ -50,16 +59,27 @@ useEffect(() => {
     }
   };
 
+  const awardToken = async () => {
+
+    await axios.post(`http://127.0.0.1:8000/api/award-chip/${sessionId}/${currentPlayer}/`, {
+        color: categoryColorNames['C' + tile?.tile_type[tile?.tile_type.length - 1]],
+      });
+      fetchSessionState();
+  }
 
   async function handleTileClick(tileId, tileType) {
     fetchBoard()
+    console.log("✅ board:", board);
     const tile = board.tiles[tileId];
-    console.log("tile:", tileId);
+    setTile(tile);
+    console.log("tile:", tile);
     const categoryName = tile?.name;
     if (tile?.tile_type.includes('C')) {
       fetchQuestion(categoryName)
     }
-
+    if (tile?.tile_type.includes('HQ')) {
+      fetchQuestion(categories['C' + tile?.tile_type[tile?.tile_type.length - 1]])
+    }
     try {
       await axios.post(`http://127.0.0.1:8000/api/update-position/${sessionId}/${currentPlayer}/`, {
         position: tileId,
@@ -92,7 +112,7 @@ useEffect(() => {
       setQuestionData(response.data); // assume { question: '', answer: '' }
       setShowQuestion(true);
       setShowAnswer(false);
-      console.log("✅ Question:", data);
+      console.log("✅ Question:", response.data);
     } catch (err) {
       console.error("❌ Failed to get question:", err);
     }
@@ -159,9 +179,6 @@ useEffect(() => {
 
       {/* Game Buttons */}
       <div className="space-x-2 mb-6">
-        <button onClick={fetchQuestion} className="bg-purple-500 text-white px-4 py-2 rounded">
-          ❓ Get Question
-        </button>
         <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
           🎲 Roll Dice (Player {currentPlayer})
         </button>
@@ -196,7 +213,15 @@ useEffect(() => {
               <>
                 <p className="text-green-700 font-bold mb-4">{questionData?.answer}</p>
                 <button
-                  onClick={() => setShowQuestion(false)}
+                  onClick={() => {
+                    setShowQuestion(false);
+                    setAnswerCorrect(true);
+                    if (tile?.tile_type.includes('HQ')) {
+                      console.log("trying to award token");
+                      awardToken();
+                      fetchSessionState();
+                    }
+                  }}
                   className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
                 >
                   Correct
@@ -204,6 +229,7 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     setShowQuestion(false);
+                    setAnswerCorrect(false);
                     nextPlayer();
                   }}
                   className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"

@@ -139,10 +139,9 @@ def get_session_state(request, session_id):
     })
 
 @api_view(['POST'])
-def award_chip(request, player_id):
+def award_chip(request, session_id, player_id):
     color = request.data.get("color")
-    player = get_object_or_404(Player, id=player_id)
-
+    player = Player.objects.get(session=session_id, session_player_id=player_id)
     player.award_chip(color)
     return Response({"message": f"{player.name} awarded {color} chip."})
 

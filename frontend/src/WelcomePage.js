@@ -8,10 +8,10 @@ const WelcomePage = () => {
   const navigate = useNavigate();
 
   const categoryColors = [
-  "#f87171", // red
-  "#34d399", // green
-  "#60a5fa", // blue
-  "#fbbf24", // yellow
+     "#f87171",   // red
+     "#fbbf24",    // yellow
+     "#34d399",   // green
+     "#60a5fa",   // blue
 ];
 
 

@@ -69,7 +69,7 @@ function Board({ sessionId, playerInfo, moves, currentPlayer, handleTileClick })
             }`}
             onClick={() => {
               if (moves?.includes(tileId)) {
-                handleTileClick(tileId);
+                handleTileClick(tileId, tileType);
               }
             }}
           >

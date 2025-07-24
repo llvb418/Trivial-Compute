@@ -15,12 +15,13 @@ function GamePage() {
   const [showQuestion, setShowQuestion] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [questionData, setQuestionData] = useState(null); // { question: '', answer: '' }
+  const [board, setBoardInfo] = useState(null);
 
   const categoryColors = {
     C1: "#f87171",   // red
-    C2: "#34d399",   // green
-    C3: "#60a5fa",   // blue
-    C4: "#fbbf24"    // yellow
+    C2: "#fbbf24",    // yellow
+    C3: "#34d399",   // green
+    C4: "#60a5fa",   // blue
   };
 
   // fetch player session state and categories
@@ -50,13 +51,21 @@ useEffect(() => {
   };
 
 
-  async function handleTileClick(tileId) {
+  async function handleTileClick(tileId, tileType) {
+    fetchBoard()
+    const tile = board.tiles[tileId];
+    console.log("tile:", tileId);
+    const categoryName = tile?.name;
+    if (tile?.tile_type.includes('C')) {
+      fetchQuestion(categoryName)
+    }
+
+
     try {
       await axios.post(`http://127.0.0.1:8000/api/update-position/${sessionId}/${currentPlayer}/`, {
         position: tileId,
       });
       setMoves([]); // Clear highlights after move
-      // Optionally refetch player info here
       fetchSessionState();
     } catch (error) {
       console.error("Failed to update position:", error);
@@ -64,19 +73,21 @@ useEffect(() => {
   }
 
   // get a random question from the backend
-  const fetchQuestion = async () => {
+  const fetchQuestion = async (category) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/get-question/`);
-      const data = await res.json();
+      const response = await axios.get('http://127.0.0.1:8000/api/get-question/', {
+        params: { category: category },
+      });
 
-      if (data.error) {
+      if (response.data.error) {
         console.error("No questions are available");
-        setQuestion({ error: data.error });
+        setQuestion({ error: response.data.error });
         return;
       }
 
-      setQuestion(data);
-      setQuestionData(data); // assume { question: '', answer: '' }
+      setQuestion(response.data.question_text);
+      console.log("real Question:", question);
+      setQuestionData(response.data); // assume { question: '', answer: '' }
       setShowQuestion(true);
       setShowAnswer(false);
       console.log("✅ Question:", data);
@@ -103,6 +114,7 @@ useEffect(() => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/get-board/${sessionId}/`);
       const data = await res.json();
+      setBoardInfo(data)
       console.log("Board Data:", data);
     } catch (err) {
       console.error("❌ Error getting board info:", err);
@@ -169,7 +181,7 @@ useEffect(() => {
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg text-center">
             <h2 className="text-xl font-semibold mb-4">Question</h2>
-            <p className="text-lg mb-4">{questionData?.question_text}</p>
+            <p className="text-lg mb-4">{question}</p>
 
             {!showAnswer ? (
               <button

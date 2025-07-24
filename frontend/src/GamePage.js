@@ -60,7 +60,6 @@ useEffect(() => {
       fetchQuestion(categoryName)
     }
 
-
     try {
       await axios.post(`http://127.0.0.1:8000/api/update-position/${sessionId}/${currentPlayer}/`, {
         position: tileId,
@@ -69,6 +68,9 @@ useEffect(() => {
       fetchSessionState();
     } catch (error) {
       console.error("Failed to update position:", error);
+    }
+    if (tile?.tile_type === "ROLL_AGAIN") {
+      fetchDiceRoll()
     }
   }
 

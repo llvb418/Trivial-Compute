@@ -18,6 +18,12 @@ function GamePage() {
   const [questionData, setQuestionData] = useState(null); // { question: '', answer: '' }
   const [board, setBoardInfo] = useState(null);
   const [tile, setTile] = useState(null);
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showWinPopup, setShowWinPopup] = useState(false);
+  const [winner, setWinner] = useState(null);
+
+
 
   const categoryColors = {
     C1: "#f87171",   // red
@@ -67,6 +73,15 @@ useEffect(() => {
       fetchSessionState();
   }
 
+  function hasAllChips() {
+    const player = playerInfo.find(p => p["session player id"] === currentPlayer);
+    console.log("tile:", player);
+    if (!player) return false; // player not found
+    return Object.values(player.chips).every(val => val === true);
+
+  }
+
+
   async function handleTileClick(tileId, tileType) {
     fetchBoard()
     console.log("✅ board:", board);
@@ -79,6 +94,9 @@ useEffect(() => {
     }
     if (tile?.tile_type.includes('HQ')) {
       fetchQuestion(categories['C' + tile?.tile_type[tile?.tile_type.length - 1]])
+    }
+    if (tile?.tile_type === 'START'){
+      setShowCategoryPopup(true);
     }
     try {
       await axios.post(`http://127.0.0.1:8000/api/update-position/${sessionId}/${currentPlayer}/`, {
@@ -182,9 +200,6 @@ useEffect(() => {
         <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
           🎲 Roll Dice (Player {currentPlayer})
         </button>
-        <button onClick={fetchBoard} className="bg-orange-500 text-white px-4 py-2 rounded">
-          🔄 Debug Board Fetch
-        </button>
       </div>
 
       {/* Current Player */}
@@ -217,9 +232,16 @@ useEffect(() => {
                     setShowQuestion(false);
                     setAnswerCorrect(true);
                     if (tile?.tile_type.includes('HQ')) {
-                      console.log("trying to award token");
                       awardToken();
                       fetchSessionState();
+                    }
+                    if (tile?.tile_type === 'START' && hasAllChips()) {
+                      console.log("player wins");
+                      setWinner(playerInfo.find(p => p["session player id"] === currentPlayer));
+                      setShowWinPopup(true);
+                    }
+                    else {
+                       console.log("does not have all tokens");
                     }
                   }}
                   className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
@@ -241,6 +263,44 @@ useEffect(() => {
           </div>
         </div>
       )}
+      {showCategoryPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <h2 className="text-lg font-semibold mb-2">Choose a Category</h2>
+            {Object.entries(categories).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setSelectedCategory(label);
+                  setShowCategoryPopup(false);
+                  // You can trigger fetching a question or something here
+                  fetchQuestion(label);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showWinPopup && winner && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">
+               {winner.name} wins the game! 
+            </h2>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+              onClick={() => window.location.href = '/'} // or navigate('/home')
+            >
+              Exit Game
+            </button>
+          </div>
+        </div>
+      )}
+
 
       {/* Game Board */}
       <div className="my-8">
@@ -251,7 +311,7 @@ useEffect(() => {
       {/* Player Info */}
       {playerInfo && (
         <div className="mt-6">
-          <h2 className="text-xl font-bold mb-2">👤 Players</h2>
+          <h2 className="text-xl font-bold mb-2"> Players</h2>
           {playerInfo.map((p, idx) => (
             <div key={idx} className="border-b py-2">
               <p><strong>{p.name}</strong> — Color: {p.color}, Position: {p.position}</p>

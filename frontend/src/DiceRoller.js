@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import dice1 from './Dice_pics/one.png';
-import dice2 from './Dice_pics/two.png';
-import dice3 from './Dice_pics/three.png';
-import dice4 from './Dice_pics/four.png';
-import dice5 from './Dice_pics/five.png';
-import dice6 from './Dice_pics/six.png';
+import { useState } from "react";
 
-const diceImages = [dice1, dice2, dice3, dice4, dice5, dice6];
+const diceImages = [
+  "/Dice_pics/one.png",
+  "/Dice_pics/two.png",
+  "/Dice_pics/three.png",
+  "/Dice_pics/four.png",
+  "/Dice_pics/five.png",
+  "/Dice_pics/six.png",
+];
 
 function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
   const [rolling, setRolling] = useState(false);
@@ -15,7 +16,6 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
   const rollDice = async () => {
     setRolling(true);
 
-    // Animation loop
     let count = 0;
     const interval = setInterval(() => {
       const face = Math.floor(Math.random() * 6) + 1;
@@ -23,7 +23,7 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
       count++;
       if (count >= 10) {
         clearInterval(interval);
-        getActualRoll(); // Fetch final result from backend
+        getActualRoll();
       }
     }, 100);
   };
@@ -37,7 +37,7 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
       setCurrentFace(data.roll);
       setRolling(false);
       if (onRollComplete) {
-        onRollComplete(data); // send result back to GamePage
+        onRollComplete(data);
       }
     } catch (err) {
       console.error("❌ Dice roll failed:", err);
@@ -49,13 +49,17 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
     <div className="flex flex-col items-center">
       <img
         src={diceImages[currentFace - 1]}
-        alt={`Dice ${currentFace}`}
-        className={`w-20 h-20 mb-2 transition-transform duration-100 ${rolling ? "animate-spin" : ""}`}
+        alt={`Dice face ${currentFace}`}
+        className={`w-24 h-24 mb-3 transition-transform duration-200 ease-in-out ${
+          rolling ? "animate-roll-dice" : ""
+        }`}
       />
       <button
-        disabled={rolling}
         onClick={rollDice}
-        className={`px-4 py-2 rounded text-white ${rolling ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}
+        disabled={rolling}
+        className={`px-4 py-2 rounded text-white text-sm ${
+          rolling ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+        }`}
       >
         {rolling ? "Rolling..." : `🎲 Roll Dice (Player ${currentPlayer})`}
       </button>
@@ -64,3 +68,4 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
 }
 
 export default DiceRoller;
+

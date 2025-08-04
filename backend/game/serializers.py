@@ -11,8 +11,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'question_text', 'question_type', 'category', 'answer_text', 'is_true', 'options']
-
+        fields = '__all__'
+        
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player

@@ -30,6 +30,11 @@ def get_random_question(request):
     if not questions.exists():
         return Response({"error": "No questions available"}, status=404)
 
+    def get_media_url(file_field):
+        if file_field:
+            return request.build_absolute_uri(file_field.url)
+        return None
+    
     question = questions.order_by('?').first()
     data = {
         "id": question.id,
@@ -37,6 +42,9 @@ def get_random_question(request):
         "question_type": question.question_type,
         "category": question.category.name,
         "answer": question.answer_text,
+        "image_url": get_media_url(question.image),
+        "video_url": get_media_url(question.video),
+        "audio_url": get_media_url(question.audio),
     }
 
     if question.question_type == "MC":

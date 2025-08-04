@@ -217,6 +217,22 @@ useEffect(() => {
             <h2 className="text-xl font-semibold mb-4">Question</h2>
             <p className="text-lg mb-4">{question}</p>
 
+            {questionData?.image_url && (
+              <img src={questionData.image_url} alt="Question visual" className="mb-4 max-w-full mx-auto" />
+            )}
+
+            {questionData?.video_url && (
+              <video controls className="mb-4 max-w-full mx-auto">
+                <source src={questionData.video_url} type="video/mp4" />
+              </video>
+            )}
+
+            {questionData?.audio_url && (
+              <audio controls className="mb-4 w-full">
+                <source src={questionData.audio_url} type="audio/mpeg" />
+              </audio>
+            )}
+
             {!showAnswer ? (
               <button
                 onClick={() => setShowAnswer(true)}

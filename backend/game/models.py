@@ -26,6 +26,10 @@ class Question(models.Model):
     question_type = models.CharField(max_length=3, choices=QUESTION_TYPES, default='TXT')
     answer_text = models.CharField(max_length=200, blank=True)  # Only used for text or TF
 
+    image = models.ImageField(upload_to='question_images/', null=True, blank=True)
+    video = models.FileField(upload_to='question_videos/', null=True, blank=True)
+    audio = models.FileField(upload_to='question_audio/', null=True, blank=True)
+
     def __str__(self):
         return f"{self.question_text} ({self.get_question_type_display()})"
 

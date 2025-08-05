@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import DiceRoller from "./DiceRoller";
 import Board from "./Board";
 
 function GamePage() {
@@ -196,11 +197,18 @@ useEffect(() => {
       )}
 
       {/* Game Buttons */}
-      <div className="space-x-2 mb-6">
-        <button onClick={fetchDiceRoll} className="bg-green-500 text-white px-4 py-2 rounded">
-          🎲 Roll Dice (Player {currentPlayer})
-        </button>
-      </div>
+      {/* Dice Roller Component */}
+            <div className="mb-6">
+            <DiceRoller
+                 sessionId={sessionId}
+                currentPlayer={currentPlayer}
+                onRollComplete={(data) => {
+                setDiceRoll(data);
+                setMoves(data.possible_tiles);
+        }}
+              />
+            </div>
+
 
       {/* Current Player */}
       <p className="text-lg mb-4">🎮 Current Player: <strong>{currentPlayer}</strong></p>

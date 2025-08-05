@@ -327,15 +327,28 @@ useEffect(() => {
       {/* Player Info */}
       {playerInfo && (
         <div className="mt-6">
-          <h2 className="text-xl font-bold mb-2"> Players</h2>
+          <h2 className="text-xl font-bold mb-2">Players</h2>
           {playerInfo.map((p, idx) => (
             <div key={idx} className="border-b py-2">
-              <p><strong>{p.name}</strong> — Color: {p.color}, Position: {p.position}</p>
-              <p>Chips: {Object.entries(p.chips).filter(([_, val]) => val).map(([k]) => k).join(", ") || "None"}</p>
+              <p>
+                <strong>{p.name}</strong> — Color:{" "}
+                <span
+                  className="w-4 h-4 rounded-full inline-block align-middle"
+                  style={{ backgroundColor: p.color }}
+                ></span>
+              </p>
+              <p>
+                Chips:{" "}
+                {Object.entries(p.chips)
+                  .filter(([_, val]) => val)
+                  .map(([k]) => k)
+                  .join(", ") || "None"}
+              </p>
             </div>
           ))}
         </div>
       )}
+
     </div>
   );
 }

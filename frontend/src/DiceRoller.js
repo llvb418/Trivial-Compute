@@ -61,7 +61,7 @@ function DiceRoller({ sessionId, currentPlayer, onRollComplete }) {
           rolling ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
         }`}
       >
-        {rolling ? "Rolling..." : `🎲 Roll Dice (Player ${currentPlayer})`}
+        {rolling ? "Rolling..." : ` Roll Dice (Player ${currentPlayer})`}
       </button>
     </div>
   );

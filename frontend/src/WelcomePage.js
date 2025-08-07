@@ -114,7 +114,7 @@ useEffect(() => {
       </div>
 
       <div className="relative max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">🎲 Welcome to Trivial Compute!</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Welcome to Trivial Compute!</h1>
         <img
           src="/Trivial_Compute.png"
           alt="Trivial Compute Logo"
@@ -184,7 +184,7 @@ useEffect(() => {
           onClick={handleSubmit}
           className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700"
         >
-          🚀 Start Game
+           Start Game
         </button>
       </div>
     </>

@@ -176,7 +176,7 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-white p-6">
-      {sessionId && (<h1 className="text-3xl font-bold mb-4">🎯 Trivial Compute Game #{sessionId}</h1>)}
+      {sessionId && (<h1 className="text-3xl font-bold mb-4"> Trivial Compute Game #{sessionId}</h1>)}
 
       {/* Category Labels */}
       {categories && (
@@ -196,27 +196,8 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Game Buttons */}
-      {/* Dice Roller Component */}
-            <div className="mb-6">
-            <DiceRoller
-                 sessionId={sessionId}
-                currentPlayer={currentPlayer}
-                onRollComplete={(data) => {
-                setDiceRoll(data);
-                setMoves(data.possible_tiles);
-        }}
-              />
-            </div>
-
-
       {/* Current Player */}
-      <p className="text-lg mb-4">🎮 Current Player: <strong>{currentPlayer}</strong></p>
-
-      {/* Dice Roll Result */}
-      {diceRoll !== null && (
-        <p className="text-lg">🎲 Dice Roll: <strong>{diceRoll.roll}</strong></p>
-      )}
+      <p className="text-lg mb-4"> Current Player: <strong>{currentPlayer}</strong></p>
 
       {/* Question Modal */}
       {showQuestion && (
@@ -325,13 +306,6 @@ useEffect(() => {
         </div>
       )}
 
-
-      {/* Game Board */}
-      <div className="my-8">
-        <Board sessionId={sessionId} playerInfo={playerInfo} moves={moves} currentPlayer={currentPlayer} 
-        handleTileClick={handleTileClick}/>
-      </div>
-
       {/* Player Info */}
       {playerInfo && (
         <div className="mt-6">
@@ -345,17 +319,55 @@ useEffect(() => {
                   style={{ backgroundColor: p.color }}
                 ></span>
               </p>
-              <p>
-                Chips:{" "}
-                {Object.entries(p.chips)
-                  .filter(([_, val]) => val)
-                  .map(([k]) => k)
-                  .join(", ") || "None"}
-              </p>
+<p className="flex items-center">
+  Chips:{" "}
+  {(() => {
+    const chipsOwned = Object.entries(p.chips)
+      .filter(([_, val]) => val) // only chips the player has
+      .map(([colorName]) => {
+        // find the category key (C1, C2, etc.) for this color
+        const categoryKey = Object.keys(categoryColorNames).find(
+          key => categoryColorNames[key] === colorName
+        );
+
+        return (
+          <span
+            key={colorName}
+            className="inline-block w-4 h-4 rounded-full ml-1"
+            style={{ backgroundColor: categoryKey ? categoryColors[categoryKey] : colorName }}
+            title={colorName}
+          ></span>
+        );
+      });
+
+    return chipsOwned.length > 0 ? chipsOwned : <span className="ml-1">None</span>;
+  })()}
+</p>
+
+
             </div>
           ))}
         </div>
       )}
+
+       {/* Game Buttons */}
+      {/* Dice Roller Component */}
+      <div className="mb-6">
+      <DiceRoller
+            sessionId={sessionId}
+          currentPlayer={currentPlayer}
+          onRollComplete={(data) => {
+          setDiceRoll(data);
+          setMoves(data.possible_tiles);
+          }}
+        />
+      </div>
+
+      {/* Game Board */}
+      <div className="my-8">
+        <Board sessionId={sessionId} playerInfo={playerInfo} moves={moves} currentPlayer={currentPlayer} 
+        handleTileClick={handleTileClick}/>
+      </div>
 
     </div>
   );
